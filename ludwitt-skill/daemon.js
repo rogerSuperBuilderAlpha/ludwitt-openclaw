@@ -56,11 +56,25 @@ function request(method, endpoint, body, redirectCount = 0) {
       },
       (res) => {
         // Follow redirects (307/301/302) up to 3 hops
-        if ([301, 302, 307, 308].includes(res.statusCode) && res.headers.location && redirectCount < 3) {
+        if (
+          [301, 302, 307, 308].includes(res.statusCode) &&
+          res.headers.location &&
+          redirectCount < 3
+        ) {
           res.resume()
           const redirectUrl = new URL(res.headers.location, url)
-          const redirectMethod = res.statusCode === 301 || res.statusCode === 302 ? (method === 'POST' ? 'GET' : method) : method
-          return request(redirectMethod, redirectUrl.toString(), redirectMethod === method ? body : null, redirectCount + 1)
+          const redirectMethod =
+            res.statusCode === 301 || res.statusCode === 302
+              ? method === 'POST'
+                ? 'GET'
+                : method
+              : method
+          return request(
+            redirectMethod,
+            redirectUrl.toString(),
+            redirectMethod === method ? body : null,
+            redirectCount + 1
+          )
             .then(resolve)
             .catch(reject)
         }
@@ -227,15 +241,51 @@ const commands = {
     const parsed = parseFlags(args)
     const [courseId, deliverableId] = parseDeliverableArgs([parsed._[0] || ''])
     const body = { courseId, deliverableId }
-    if (parsed.url) body.deployedUrl = parsed.url
-    if (parsed.github) body.githubUrl = parsed.github
-    if (parsed.loom) body.loomUrl = parsed.loom
-    if (parsed.notes) body.submissionNotes = parsed.notes
 
-    if (!body.deployedUrl && !body.githubUrl && !body.loomUrl) {
-      console.error('At least one URL required: --url, --github, or --loom')
+    // Required fields
+    if (!parsed.url) {
+      console.error('--url is required: your live deployed platform URL')
       process.exit(1)
     }
+    if (!parsed.github) {
+      console.error('--github is required: your project GitHub repository URL')
+      process.exit(1)
+    }
+    body.deployedUrl = parsed.url
+    body.githubUrl = parsed.github
+
+    // Reflection: either --video <url> or --paper <filepath>
+    if (!parsed.video && !parsed.paper) {
+      console.error(
+        'A reflection is required. Use --video <url> for a generated video, or --paper <filepath> for a written paper (min 5000 words).'
+      )
+      process.exit(1)
+    }
+
+    if (parsed.video) {
+      body.reflectionVideoUrl = parsed.video
+    }
+
+    if (parsed.paper) {
+      const fs = require('fs')
+      const paperPath = parsed.paper
+      if (!fs.existsSync(paperPath)) {
+        console.error(`Paper file not found: ${paperPath}`)
+        process.exit(1)
+      }
+      const paperText = fs.readFileSync(paperPath, 'utf8')
+      const wordCount = paperText.trim().split(/\s+/).filter(Boolean).length
+      console.log(`Paper loaded: ${wordCount} words`)
+      if (wordCount < 5000) {
+        console.error(
+          `Paper must be at least 5000 words. Your paper has ${wordCount} words.`
+        )
+        process.exit(1)
+      }
+      body.reflectionPaper = paperText
+    }
+
+    if (parsed.notes) body.submissionNotes = parsed.notes
 
     const result = await request(
       'POST',
@@ -348,7 +398,8 @@ Commands:
   paths                   Browse published paths
   join <pathId>           Join a published path
   start <deliverableId>   Start working on a deliverable
-  submit <id> --url <url> --github <url>   Submit a deliverable
+  submit <id> --url <url> --github <url> --video <url>        Submit with reflection video
+  submit <id> --url <url> --github <url> --paper <filepath>   Submit with written paper
   queue                   View pending peer reviews
   grade <id> --clarity N --completeness N --technical N --feedback "..."
 

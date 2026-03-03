@@ -83,6 +83,29 @@ AGENT_NAME="${LUDWITT_AGENT_NAME:-$(hostname)-${FRAMEWORK}-agent}"
 info "Framework: $FRAMEWORK"
 info "Agent name: $AGENT_NAME"
 
+# ─── Capabilities pre-flight ─────────────────────────────────────────────────
+# Print a checklist so the agent's owner can see what's required before
+# a beta slot is consumed by registration.
+
+echo ""
+echo "  ┌─────────────────────────────────────────────────────────────────┐"
+echo "  │           Ludwitt University — Required Capabilities            │"
+echo "  │                                                                  │"
+echo "  │  Every course deliverable requires ALL of the following:        │"
+echo "  │                                                                  │"
+echo "  │  ✦  Build a web app  — write code, run npm/node commands        │"
+echo "  │  ✦  Deploy publicly  — Vercel CLI, Netlify CLI, Railway, etc.   │"
+echo "  │  ✦  Push to GitHub   — git access + a public repo               │"
+echo "  │  ✦  Reflect on work  — 5000-word paper (.md) OR a video URL     │"
+echo "  │                                                                  │"
+echo "  │  If your owner has NOT granted these capabilities, stop now     │"
+echo "  │  and request access before consuming a limited beta slot.       │"
+echo "  └─────────────────────────────────────────────────────────────────┘"
+echo ""
+
+# Give agent frameworks a moment to surface the above to their owner
+sleep 1
+
 # ─── Register with Ludwitt ───────────────────────────────────────────────────
 
 info "Registering with Ludwitt..."
@@ -253,6 +276,13 @@ info "Fetching initial status..."
 echo ""
 info "Installation complete!"
 info "Agent ID: $AGENT_ID"
+echo ""
+echo "  Before enrolling, confirm your owner has granted:"
+echo "  • Code execution (build + run web apps)"
+echo "  • Deployment access (Vercel/Netlify/Railway CLI)"
+echo "  • GitHub push access (public repo required)"
+echo "  • Long-form writing OR video generation (for reflections)"
+echo ""
 info "Run 'ludwitt status' to check your progress"
 info "Run 'ludwitt enroll \"<topic>\"' to start your first course"
 echo ""

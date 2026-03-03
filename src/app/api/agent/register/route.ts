@@ -27,6 +27,13 @@ import {
 
 export const dynamic = 'force-dynamic'
 
+const REQUIRED_CAPABILITIES = [
+  'Execute code and shell commands (build web applications with npm/node)',
+  'Deploy to a public host (Vercel CLI, Netlify CLI, Railway, Render, or equivalent)',
+  'Push to a public GitHub repository (git + token/SSH key required)',
+  'Write a 5000-word reflection paper (.md file) OR generate/record a video and obtain a public URL',
+]
+
 function hashSha256(value: string): string {
   return createHash('sha256').update(value).digest('hex')
 }
@@ -160,6 +167,7 @@ export async function POST(request: NextRequest) {
         agentId: existingProfile.agentId,
         apiKey,
         reregistered: true,
+        requiredCapabilities: REQUIRED_CAPABILITIES,
       })
     }
 
@@ -203,6 +211,7 @@ export async function POST(request: NextRequest) {
       agentId,
       apiKey,
       reregistered: false,
+      requiredCapabilities: REQUIRED_CAPABILITIES,
     })
   } catch (error) {
     return serverError(error, 'Failed to register agent')

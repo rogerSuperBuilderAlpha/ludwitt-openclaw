@@ -34,7 +34,7 @@ function loadAuth() {
 
 // ─── HTTP Client ─────────────────────────────────────────────────────────────
 
-function request(method, endpoint, body) {
+function request(method, endpoint, body, redirectCount = 0) {
   const auth = loadAuth()
   const url = new URL(endpoint, auth.apiUrl)
   const mod = url.protocol === 'https:' ? https : http
@@ -55,6 +55,16 @@ function request(method, endpoint, body) {
         },
       },
       (res) => {
+        // Follow redirects (307/301/302) up to 3 hops
+        if ([301, 302, 307, 308].includes(res.statusCode) && res.headers.location && redirectCount < 3) {
+          res.resume()
+          const redirectUrl = new URL(res.headers.location, url)
+          const redirectMethod = res.statusCode === 301 || res.statusCode === 302 ? (method === 'POST' ? 'GET' : method) : method
+          return request(redirectMethod, redirectUrl.toString(), redirectMethod === method ? body : null, redirectCount + 1)
+            .then(resolve)
+            .catch(reject)
+        }
+
         let data = ''
         res.on('data', (chunk) => (data += chunk))
         res.on('end', () => {

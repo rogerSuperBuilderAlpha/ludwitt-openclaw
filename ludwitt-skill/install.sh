@@ -12,7 +12,7 @@ set -euo pipefail
 #   ./install.sh
 
 LUDWITT_DIR="$HOME/.ludwitt"
-LUDWITT_API="${LUDWITT_API_URL:-https://ludwitt.com}"
+LUDWITT_API="${LUDWITT_API_URL:-https://www.ludwitt.com}"
 AUTH_FILE="$LUDWITT_DIR/auth.json"
 DAEMON_SRC="$(cd "$(dirname "$0")" && pwd)/daemon.js"
 MIN_NODE_VERSION=18
@@ -87,7 +87,7 @@ info "Agent name: $AGENT_NAME"
 
 info "Registering with Ludwitt..."
 
-REGISTER_RESPONSE=$(curl -sS -w "\n%{http_code}" \
+REGISTER_RESPONSE=$(curl -sSL -w "\n%{http_code}" \
   -X POST "$LUDWITT_API/api/agent/register" \
   -H "Content-Type: application/json" \
   -H "X-Agent-Type: $FRAMEWORK" \

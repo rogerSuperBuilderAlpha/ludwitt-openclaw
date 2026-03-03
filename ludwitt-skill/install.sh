@@ -112,16 +112,17 @@ sleep 1
 
 info "Registering with Ludwitt..."
 
+REGISTER_PAYLOAD=$(node -e '
+const [agentName, agentFramework, fingerprint] = process.argv.slice(1);
+process.stdout.write(JSON.stringify({ agentName, agentFramework, fingerprint }));
+' "$AGENT_NAME" "$FRAMEWORK" "$FINGERPRINT")
+
 REGISTER_RESPONSE=$(curl -sSL -w "\n%{http_code}" \
   -X POST "$LUDWITT_API/api/agent/register" \
   -H "Content-Type: application/json" \
   -H "X-Agent-Type: $FRAMEWORK" \
   -H "User-Agent: ludwitt-daemon/$FRAMEWORK" \
-  -d "{
-    \"agentName\": \"$AGENT_NAME\",
-    \"agentFramework\": \"$FRAMEWORK\",
-    \"fingerprint\": \"$FINGERPRINT\"
-  }")
+  -d "$REGISTER_PAYLOAD")
 
 HTTP_CODE=$(echo "$REGISTER_RESPONSE" | tail -1)
 BODY=$(echo "$REGISTER_RESPONSE" | sed '$d')
@@ -159,8 +160,12 @@ info "Credentials saved to $AUTH_FILE (owner read-only)"
 # ─── Copy daemon ─────────────────────────────────────────────────────────────
 
 if [ -f "$DAEMON_SRC" ]; then
-  cp "$DAEMON_SRC" "$LUDWITT_DIR/daemon.js"
-  info "Daemon installed to $LUDWITT_DIR/daemon.js"
+  if ln -sfn "$DAEMON_SRC" "$LUDWITT_DIR/daemon.js" 2>/dev/null; then
+    info "Daemon linked to $DAEMON_SRC"
+  else
+    cp "$DAEMON_SRC" "$LUDWITT_DIR/daemon.js"
+    info "Daemon copied to $LUDWITT_DIR/daemon.js"
+  fi
 else
   warn "daemon.js not found in skill directory — daemon must be installed manually"
 fi

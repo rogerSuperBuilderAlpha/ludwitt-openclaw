@@ -20,6 +20,14 @@ const AUTH_FILE = path.join(LUDWITT_DIR, 'auth.json')
 const PROGRESS_FILE = path.join(LUDWITT_DIR, 'progress.md')
 const QUEUE_FILE = path.join(LUDWITT_DIR, 'queue.md')
 const POLL_INTERVAL_MS = 10 * 60 * 1000 // 10 minutes
+const REQUEST_TIMEOUT_MS = parseInt(
+  process.env.LUDWITT_REQUEST_TIMEOUT_MS || '15000',
+  10
+)
+const MAX_REQUEST_RETRIES = parseInt(
+  process.env.LUDWITT_REQUEST_RETRIES || '2',
+  10
+)
 
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
@@ -34,12 +42,34 @@ function loadAuth() {
 
 // ─── HTTP Client ─────────────────────────────────────────────────────────────
 
-function request(method, endpoint, body, redirectCount = 0) {
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function isRetryableError(err) {
+  if (!err) return false
+  if (err.retryable === true) return true
+  if (typeof err.statusCode === 'number') {
+    return err.statusCode >= 500 || err.statusCode === 429
+  }
+  return ['ECONNRESET', 'ETIMEDOUT', 'EAI_AGAIN', 'ENOTFOUND'].includes(
+    err.code
+  )
+}
+
+function requestOnce(method, endpoint, body, redirectCount = 0) {
   const auth = loadAuth()
   const url = new URL(endpoint, auth.apiUrl)
   const mod = url.protocol === 'https:' ? https : http
 
   return new Promise((resolve, reject) => {
+    let settled = false
+    const finish = (fn, value) => {
+      if (settled) return
+      settled = true
+      fn(value)
+    }
+
     const payload = body ? JSON.stringify(body) : null
     const req = mod.request(
       url,
@@ -63,16 +93,10 @@ function request(method, endpoint, body, redirectCount = 0) {
         ) {
           res.resume()
           const redirectUrl = new URL(res.headers.location, url)
-          const redirectMethod =
-            res.statusCode === 301 || res.statusCode === 302
-              ? method === 'POST'
-                ? 'GET'
-                : method
-              : method
-          return request(
-            redirectMethod,
+          return requestOnce(
+            method,
             redirectUrl.toString(),
-            redirectMethod === method ? body : null,
+            body,
             redirectCount + 1
           )
             .then(resolve)
@@ -82,23 +106,79 @@ function request(method, endpoint, body, redirectCount = 0) {
         let data = ''
         res.on('data', (chunk) => (data += chunk))
         res.on('end', () => {
+          if (!data.trim()) {
+            if (res.statusCode >= 400) {
+              const err = new Error(`HTTP ${res.statusCode}`)
+              err.statusCode = res.statusCode
+              err.retryable = res.statusCode >= 500 || res.statusCode === 429
+              finish(reject, err)
+              return
+            }
+            finish(resolve, {})
+            return
+          }
+
           try {
             const parsed = JSON.parse(data)
             if (res.statusCode >= 400) {
-              reject(new Error(parsed.error || `HTTP ${res.statusCode}`))
+              const err = new Error(parsed.error || `HTTP ${res.statusCode}`)
+              err.statusCode = res.statusCode
+              err.retryable = res.statusCode >= 500 || res.statusCode === 429
+              finish(reject, err)
             } else {
-              resolve(parsed.data || parsed)
+              finish(resolve, parsed.data || parsed)
             }
           } catch {
-            reject(new Error(`Invalid response: ${data.slice(0, 200)}`))
+            if (res.statusCode >= 400) {
+              const err = new Error(
+                `HTTP ${res.statusCode}: ${data.slice(0, 200)}`
+              )
+              err.statusCode = res.statusCode
+              err.retryable = res.statusCode >= 500 || res.statusCode === 429
+              finish(reject, err)
+            } else {
+              finish(
+                reject,
+                new Error(`Invalid response: ${data.slice(0, 200)}`)
+              )
+            }
           }
         })
       }
     )
-    req.on('error', reject)
+    req.setTimeout(REQUEST_TIMEOUT_MS, () => {
+      const err = new Error(
+        `Request timed out after ${REQUEST_TIMEOUT_MS}ms (${method} ${url.pathname})`
+      )
+      err.code = 'ETIMEDOUT'
+      err.retryable = true
+      req.destroy(err)
+    })
+    req.on('error', (err) => finish(reject, err))
     if (payload) req.write(payload)
     req.end()
   })
+}
+
+async function request(method, endpoint, body) {
+  let attempt = 0
+  let lastError = null
+
+  while (attempt <= MAX_REQUEST_RETRIES) {
+    try {
+      return await requestOnce(method, endpoint, body)
+    } catch (err) {
+      lastError = err
+      if (attempt >= MAX_REQUEST_RETRIES || !isRetryableError(err)) {
+        throw err
+      }
+      const backoffMs = Math.min(2000 * 2 ** attempt, 10000)
+      await sleep(backoffMs)
+      attempt += 1
+    }
+  }
+
+  throw lastError
 }
 
 // ─── State Writers ───────────────────────────────────────────────────────────
@@ -158,6 +238,11 @@ async function poll() {
         '/api/university/peer-reviews/queue'
       )
       writeQueue(queueData.reviews || [])
+    } else {
+      fs.writeFileSync(
+        QUEUE_FILE,
+        `# Peer Review Queue\n\nProfessor mode is locked until at least one course is completed.\n\n*Last updated: ${new Date().toISOString()}*\n`
+      )
     }
   } catch (err) {
     console.error(`[ludwitt] Poll failed: ${err.message}`)

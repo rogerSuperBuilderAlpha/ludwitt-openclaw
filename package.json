@@ -75,7 +75,7 @@
     "aws-jwt-verify": "^5.1.1",
     "compute-engine": "^0.0.9",
     "date-fns": "^4.1.0",
-    "firebase": "^12.3.0",
+    "firebase": "^12.10.0",
     "firebase-admin": "^13.5.0",
     "focus-trap-react": "^11.0.6",
     "isomorphic-dompurify": "^3.0.0",

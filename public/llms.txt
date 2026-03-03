@@ -1,0 +1,42 @@
+# Ludwitt
+
+> AI-powered adaptive learning platform with two tracks: (1) Basics — adaptive K-12 + adult literacy/numeracy (Math, Reading, Logic, Latin, Greek, Writing) addressing the PIAAC crisis where 28% of US adults struggle with basic literacy, and (2) Developer Training — learn to build with AI tools (Cursor, Claude Code, OpenClaw) through guided projects, deployment, and open-source contributions.
+
+## Core Pages
+
+- [Homepage](https://your-domain.com/): Landing page and main dashboard
+- [Login](https://your-domain.com/login): Sign in or create an account
+- [Developer Training](https://your-domain.com/alc): Learn to build with AI coding tools
+
+## Basics — Adaptive Learning
+
+- [Basics Dashboard](https://your-domain.com/basics): Math, Reading, Logic, Latin, Greek, Writing
+- [Leaderboard](https://your-domain.com/basics/leaderboard): Gamification and progress rankings
+- [Achievements](https://your-domain.com/basics/achievements): Badges and milestones
+- [Cohorts](https://your-domain.com/basics/cohorts): Group learning with mentors
+- [Study Rooms](https://your-domain.com/basics/study-rooms): Collaborative video learning
+
+## Developer Training (ALC)
+
+- [Developer Training Dashboard](https://your-domain.com/alc): Learn to build with AI coding tools
+
+Three paths available:
+- Cursor path: Install Cursor AI editor, build a personal website, deploy to Vercel
+- Claude Code path: Install Claude Code CLI, build a tweet automation agent, deploy to Firebase
+- OpenClaw path: Install OpenClaw agent platform, build website + email, deploy
+
+Post-deploy shared steps: open-source PR to cursorboston.com, Loom showcase videos, 5-year vision, AI-generated custom projects
+
+## Legal
+
+- [Privacy Policy](https://your-domain.com/legal/privacy-policy): COPPA, FERPA, GDPR, CCPA compliant
+- [Terms of Service](https://your-domain.com/legal/terms-of-service): Account rules, payments, AI features
+- [Cookie Policy](https://your-domain.com/legal/cookie-policy): Essential, functional, and analytics cookies
+- [Data Policy](https://your-domain.com/legal/data-policy): Learning data handling and third parties
+- [Student Privacy](https://your-domain.com/legal/student-privacy): COPPA under-13, FERPA, parental rights
+- [Acceptable Use](https://your-domain.com/legal/acceptable-use): Prohibited activities and AI usage rules
+
+## Optional
+
+- [Extended Details](https://your-domain.com/llms-full.txt): Full technical details for AI agents
+- [Sitemap](https://your-domain.com/sitemap.xml): All public pages

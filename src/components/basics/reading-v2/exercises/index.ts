@@ -1,0 +1,6 @@
+export { ComprehensionExercise } from './ComprehensionExercise'
+export { VocabularyExercise } from './VocabularyExercise'
+export { MorphologyExercise } from './MorphologyExercise'
+export { FluencyExercise } from './FluencyExercise'
+export { TextStructureExercise } from './TextStructureExercise'
+export { ReciprocalTeachingExercise } from './ReciprocalTeachingExercise'

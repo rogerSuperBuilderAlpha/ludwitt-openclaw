@@ -1,0 +1,18 @@
+# Default owner for all files
+* @ludwitt
+
+# Security-critical paths require explicit review
+firestore.rules @ludwitt
+firebase-storage.rules @ludwitt
+src/lib/api/auth-middleware.ts @ludwitt
+src/lib/api/auth.ts @ludwitt
+src/lib/rate-limit/ @ludwitt
+src/lib/rateLimit.ts @ludwitt
+src/lib/rateLimit/ @ludwitt
+src/lib/credits/ @ludwitt
+src/lib/stripe/ @ludwitt
+src/app/api/payments/ @ludwitt
+src/app/api/credits/ @ludwitt
+src/app/api/admin/ @ludwitt
+src/app/api/user/delete-account/ @ludwitt
+src/app/api/user/export-data/ @ludwitt

@@ -1,0 +1,177 @@
+{
+  "name": "Ludwitt - AI-Powered Adaptive Learning for All Ages",
+  "short_name": "Ludwitt",
+  "description": "AI-powered adaptive learning platform addressing the global literacy and numeracy crisis. PIAAC 2023 shows 28% of US adults struggle with basic literacy and 34% with numeracy. We provide personalized, research-backed education for K-12 students and adults rebuilding foundational skills. Features adaptive difficulty, AI tutoring, gamification, and multi-subject coverage including Math, Reading, Logic, Latin, and Greek.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#faf8f5",
+  "theme_color": "#d64933",
+  "orientation": "portrait-primary",
+  "lang": "en-US",
+  "dir": "ltr",
+  "scope": "/",
+  "id": "pitch-rise-learning",
+
+  "icons": [
+    {
+      "src": "/logos/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logos/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logos/logo.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+
+  "categories": ["education", "productivity", "utilities", "lifestyle"],
+
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
+
+  "screenshots": [
+    {
+      "src": "/screenshot1.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Dashboard - Adaptive learning across Math, Reading, and Logic"
+    },
+    {
+      "src": "/screenshot2.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "label": "Math Practice - AI-adjusted difficulty for optimal challenge"
+    }
+  ],
+
+  "shortcuts": [
+    {
+      "name": "Start Learning",
+      "short_name": "Learn",
+      "description": "Begin your adaptive learning session",
+      "url": "/",
+      "icons": [{ "src": "/logos/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your learning dashboard and progress",
+      "url": "/dashboard",
+      "icons": [{ "src": "/logos/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Leaderboard",
+      "short_name": "Leaders",
+      "description": "See top learners and compete",
+      "url": "/basics/leaderboard",
+      "icons": [{ "src": "/logos/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Achievements",
+      "short_name": "Achieve",
+      "description": "View your badges and achievements",
+      "url": "/basics/achievements",
+      "icons": [{ "src": "/logos/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "AI Tutor",
+      "short_name": "Tutor",
+      "description": "Get personalized help from the AI tutor",
+      "url": "/basics/ai-assistant",
+      "icons": [{ "src": "/logos/logo.png", "sizes": "192x192" }]
+    }
+  ],
+
+  "related_applications": [],
+  "prefer_related_applications": false,
+
+  "handle_links": "preferred",
+
+  "launch_handler": {
+    "client_mode": ["navigate-existing", "auto"]
+  },
+
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+
+  "protocol_handlers": [
+    {
+      "protocol": "web+pitchrise",
+      "url": "/?source=%s"
+    }
+  ],
+
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+
+  "extended_metadata": {
+    "platform_type": "Adaptive Learning Platform",
+    "primary_focus": "Literacy and Numeracy Improvement",
+    "target_audiences": [
+      "K-12 Students",
+      "Adult Learners",
+      "Families",
+      "Educators",
+      "Workforce Development"
+    ],
+    "subjects": [
+      "Mathematics",
+      "Reading Comprehension",
+      "Vocabulary",
+      "Logic",
+      "Critical Thinking",
+      "Latin",
+      "Greek",
+      "Writing"
+    ],
+    "key_features": [
+      "AI-powered adaptive difficulty",
+      "Personalized tutoring",
+      "Gamification (XP, streaks, achievements)",
+      "Spaced repetition",
+      "Mastery-based progression",
+      "Real-time feedback"
+    ],
+    "problem_addressed": {
+      "name": "Global Adult Literacy and Numeracy Crisis",
+      "source": "PIAAC 2023",
+      "statistics": {
+        "us_literacy_decline": "12 points (2017-2023)",
+        "us_numeracy_decline": "7 points (2017-2023)",
+        "adults_low_literacy_percent": 28,
+        "adults_low_numeracy_percent": 34,
+        "affected_americans_literacy": 54000000,
+        "affected_americans_numeracy": 66000000
+      }
+    },
+    "learning_science": [
+      "Zone of Proximal Development (Vygotsky)",
+      "Spaced Repetition (Ebbinghaus)",
+      "Mastery Learning (Bloom)",
+      "Feedback Research (Hattie)",
+      "Growth Mindset (Dweck)"
+    ],
+    "technology": {
+      "frontend": "Next.js 15, React 19, TypeScript",
+      "ai": "Anthropic Claude",
+      "hosting": "Vercel"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+# Ludwitt Security Policy
+# https://securitytxt.org/
+
+Contact: mailto:security@ludwitt.com
+Expires: 2027-01-01T00:00:00.000Z
+Preferred-Languages: en
+Canonical: https://your-domain.com/.well-known/security.txt
+Policy: https://your-domain.com/legal/privacy-policy
+
+# Ludwitt is an AI-powered adaptive learning platform.
+# We take security seriously and appreciate responsible disclosure.
+#
+# If you discover a security vulnerability, please report it to us
+# at security@ludwitt.com. We will respond within 48 hours.
+#
+# We are committed to:
+# - COPPA compliance for users under 13
+# - FERPA compliance for educational records
+# - GDPR compliance for EU users
+# - Industry-standard encryption for all data

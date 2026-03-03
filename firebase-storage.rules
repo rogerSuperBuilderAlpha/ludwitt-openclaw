@@ -1,0 +1,102 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Voice Notes - authenticated users can read (signed URLs used for playback),
+    // only owner can write with size and content-type restrictions
+    match /voice-notes/{userId}/{allPaths=**} {
+      allow read: if request.auth != null && request.auth.uid == userId;
+      allow write: if request.auth != null && request.auth.uid == userId
+                    && request.resource.size < 50 * 1024 * 1024
+                    && request.resource.contentType.matches('audio/.*');
+    }
+
+    // Allow authenticated users to upload/read their own audio files
+    match /audio/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow authenticated users to upload/read their own profile images
+    match /profile_images/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Profile photos - authenticated users can read, owner-writable
+    match /profile-photos/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Legacy audio_recordings path (if still needed)
+    match /audio_recordings/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Folio: Avatar uploads - authenticated users can read, owner-writable
+    match /avatars/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Folio: Video uploads - users can upload their own videos
+    match /uploads/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Folio: Video thumbnails - authenticated read, owner-scoped write
+    match /thumbnails/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId
+                    && request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*');
+    }
+    
+    // Folio: Exports (invoices, contracts) - owner only
+    match /exports/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Applications - user-submitted application videos, scoped by userId
+    match /applications/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId
+                    && request.resource.size < 50 * 1024 * 1024
+                    && (request.resource.contentType.matches('video/.*')
+                        || request.resource.contentType.matches('application/pdf'));
+    }
+    
+    // Reports - user-submitted reports with images/PDFs
+    match /reports/{userId}/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId
+                    && request.resource.size < 20 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*|application/pdf');
+    }
+    
+    // Faculty chat files - authenticated users only
+    match /faculty-chat/{allPaths=**} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+                    && request.resource.size < 25 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*|application/pdf|video/.*');
+    }
+    
+    // Logos - publicly readable, backend-only writes
+    match /logos/{allPaths=**} {
+      allow read: if true;
+      allow write: if false; // Backend only
+    }
+    
+    // Topanga images - publicly readable, backend-only writes
+    match /topanga-images/{allPaths=**} {
+      allow read: if true;
+      allow write: if false; // Backend only
+    }
+    
+    // Deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
+

@@ -1,0 +1,202 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { resolveUniversityAuth } from '@/lib/api/agent-auth'
+import { serverError, badRequestError } from '@/lib/api/error-responses'
+import { successResponse } from '@/lib/api/response-helpers'
+import { db } from '@/lib/firebase/admin'
+import type {
+  UniversityLearningPath,
+  UniversityCourse,
+  UniversityStudentProfile,
+  CourseDeliverable,
+} from '@/lib/types/university'
+import { toCourseDisplay, toPathDisplay } from '@/lib/types/university'
+import { notifyStudentJoinedPath } from '@/lib/university/notifications'
+
+export const dynamic = 'force-dynamic'
+
+export async function POST(request: NextRequest) {
+  try {
+    const authResult = await resolveUniversityAuth(request)
+    if (authResult instanceof NextResponse) {
+      return authResult
+    }
+    const userId = authResult.isAgent ? authResult.agentId : authResult.userId
+
+    const body = await request.json()
+    const { pathId } = body
+
+    if (!pathId || typeof pathId !== 'string') {
+      return badRequestError('pathId is required')
+    }
+
+    // 1. Validate source path exists and is published
+    const sourcePathSnap = await db
+      .collection('universityLearningPaths')
+      .doc(pathId)
+      .get()
+    if (!sourcePathSnap.exists) {
+      return badRequestError('Learning path not found')
+    }
+
+    const sourcePathData = sourcePathSnap.data()!
+    if (sourcePathData.status !== 'active') {
+      return badRequestError('This learning path is not available for joining')
+    }
+
+    if (sourcePathData.userId === userId) {
+      return badRequestError('You cannot join your own learning path')
+    }
+
+    // 2. Check user hasn't already joined this path
+    const existingJoinSnap = await db
+      .collection('universityLearningPaths')
+      .where('userId', '==', userId)
+      .where('sourcePathId', '==', pathId)
+      .limit(1)
+      .get()
+
+    if (!existingJoinSnap.empty) {
+      return badRequestError('You have already joined this learning path')
+    }
+
+    // 3. Check active path limit (max 5)
+    const activePathsSnap = await db
+      .collection('universityLearningPaths')
+      .where('userId', '==', userId)
+      .where('status', '==', 'active')
+      .get()
+
+    if (activePathsSnap.size >= 5) {
+      return badRequestError(
+        'You can have up to 5 active learning paths. Complete one before joining a new one.'
+      )
+    }
+
+    // 4. Fetch source courses
+    const sourceCoursesSnap = await db
+      .collection('universityCourses')
+      .where('learningPathId', '==', pathId)
+      .orderBy('order', 'asc')
+      .get()
+
+    if (sourceCoursesSnap.empty) {
+      return badRequestError('This learning path has no courses')
+    }
+
+    // 5. Ensure student profile exists
+    const profileRef = db.collection('universityStudentProfiles').doc(userId)
+    const profileSnap = await profileRef.get()
+
+    if (!profileSnap.exists) {
+      const now = new Date().toISOString()
+      const profile: UniversityStudentProfile = {
+        userId,
+        completedCourses: [],
+        totalXP: 0,
+        enrolledAt: now,
+        updatedAt: now,
+      }
+      await profileRef.set(profile)
+    }
+
+    // 6. Build new path + courses
+    const now = new Date().toISOString()
+    const newPathRef = db.collection('universityLearningPaths').doc()
+    const newPathId = newPathRef.id
+    const newCourseIds: string[] = []
+    const newCourseDocs: UniversityCourse[] = []
+
+    for (let i = 0; i < sourceCoursesSnap.docs.length; i++) {
+      const sourceCourse = sourceCoursesSnap.docs[i].data()
+      const newCourseRef = db.collection('universityCourses').doc()
+      const newCourseId = newCourseRef.id
+      newCourseIds.push(newCourseId)
+
+      const deliverables: CourseDeliverable[] = (
+        sourceCourse.deliverables || []
+      ).map((d: CourseDeliverable, dIdx: number) => ({
+        id: `${newCourseId}-del-${dIdx + 1}`,
+        title: d.title,
+        description: d.description,
+        type: d.type,
+        requirements: d.requirements,
+        order: d.order,
+        status: i === 0 && dIdx === 0 ? 'available' : 'locked',
+      }))
+
+      const courseDoc: UniversityCourse = {
+        id: newCourseId,
+        userId,
+        learningPathId: newPathId,
+        title: sourceCourse.title,
+        description: sourceCourse.description,
+        subject: sourceCourse.subject,
+        topic: sourceCourse.topic,
+        level: sourceCourse.level,
+        order: i,
+        prerequisites: newCourseIds.slice(0, i),
+        deliverables,
+        status: i === 0 ? 'available' : 'locked',
+        professors: [],
+        createdAt: now,
+        updatedAt: now,
+      }
+
+      newCourseDocs.push(courseDoc)
+    }
+
+    const newPathDoc: UniversityLearningPath = {
+      id: newPathId,
+      userId,
+      targetTopic: sourcePathData.targetTopic,
+      courses: newCourseIds,
+      status: 'active',
+      sourcePathId: pathId,
+      subjects: sourcePathData.subjects || [],
+      tags: sourcePathData.tags || [],
+      createdAt: now,
+      updatedAt: now,
+      ...(sourcePathData.targetDescription && {
+        targetDescription: sourcePathData.targetDescription,
+      }),
+      ...(sourcePathData.profession && {
+        profession: sourcePathData.profession,
+      }),
+      ...(sourcePathData.levelRange && {
+        levelRange: sourcePathData.levelRange,
+      }),
+    }
+
+    // 7. Batch write
+    const batch = db.batch()
+    batch.set(newPathRef, newPathDoc)
+    for (const courseDoc of newCourseDocs) {
+      batch.set(db.collection('universityCourses').doc(courseDoc.id), courseDoc)
+    }
+    batch.update(profileRef, { updatedAt: now })
+
+    await batch.commit()
+
+    // Notify path creator (fire-and-forget)
+    const creatorId = sourcePathData.userId as string
+    if (creatorId && creatorId !== userId) {
+      const userDoc = await db.collection('users').doc(userId).get()
+      const studentName =
+        userDoc.data()?.displayName ||
+        userDoc.data()?.email?.split('@')[0] ||
+        'Student'
+      notifyStudentJoinedPath(
+        creatorId,
+        studentName,
+        (sourcePathData.targetTopic as string) || 'Learning Path'
+      )
+    }
+
+    return successResponse({
+      learningPath: toPathDisplay(newPathDoc, newCourseDocs),
+      courses: newCourseDocs.map(toCourseDisplay),
+    })
+  } catch (error) {
+    return serverError(error, 'Failed to join learning path')
+  }
+}

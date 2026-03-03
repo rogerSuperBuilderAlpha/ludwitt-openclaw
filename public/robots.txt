@@ -1,0 +1,249 @@
+# =============================================================================
+# Ludwitt - Robots.txt
+# Adaptive Learning Platform for K-12 Students and Adult Re-Education
+# https://your-domain.com
+# =============================================================================
+
+# Allow all standard crawlers
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+Disallow: /deprecated/
+
+# =============================================================================
+# AI CRAWLER PERMISSIONS
+# =============================================================================
+
+# OpenAI / ChatGPT
+User-agent: GPTBot
+Allow: /
+Allow: /alc
+Allow: /legal/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+User-agent: ChatGPT-User
+Allow: /
+Allow: /alc
+Allow: /legal/
+Allow: /llms.txt
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+# Anthropic / Claude
+User-agent: Claude-Web
+Allow: /
+Allow: /alc
+Allow: /legal/
+Allow: /llms.txt
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+User-agent: anthropic-ai
+Allow: /
+Allow: /alc
+Allow: /legal/
+Allow: /llms.txt
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+User-agent: ClaudeBot
+Allow: /
+Allow: /alc
+Allow: /legal/
+Allow: /llms.txt
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+# Perplexity AI
+User-agent: PerplexityBot
+Allow: /
+Allow: /alc
+Allow: /legal/
+Allow: /llms.txt
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+# Google Gemini
+User-agent: Google-Extended
+Allow: /
+Allow: /alc
+Allow: /legal/
+Allow: /llms.txt
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+# Cohere AI
+User-agent: cohere-ai
+Allow: /
+Allow: /alc
+Allow: /legal/
+Allow: /llms.txt
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+# Meta AI
+User-agent: FacebookBot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+User-agent: meta-externalagent
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+# Microsoft / Bing AI
+User-agent: Bingbot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+# Apple / Applebot (Siri)
+User-agent: Applebot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+# OpenAI Search Bot
+User-agent: OAI-SearchBot
+Allow: /
+Allow: /alc
+Allow: /legal/
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+Disallow: /university/
+Disallow: /professors/
+
+# Other crawlers
+User-agent: YouBot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+
+User-agent: CCBot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+Disallow: /customers/
+Disallow: /developers/
+
+User-agent: Amazonbot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+
+User-agent: BraveBot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+
+User-agent: DuckDuckBot
+Allow: /
+Disallow: /api/
+Disallow: /dashboard/
+Disallow: /account/
+
+# =============================================================================
+# SITEMAPS
+# =============================================================================
+Sitemap: https://your-domain.com/sitemap.xml
+
+# =============================================================================
+# AI DISCOVERY FILES
+# =============================================================================
+# For AI agents seeking to understand our platform:
+# - /llms.txt - Platform overview for LLMs
+# - /llms-full.txt - Extended technical details for AI agents
+# - /context.md - Quick summary for AI context
+# - /.well-known/security.txt - Security policy
+# - /sitemap.xml - Dynamic sitemap with all public pages
+#
+# Public pages: /, /login, /alc, /basics, /basics/leaderboard,
+# /basics/achievements, /basics/cohorts, /basics/study-rooms,
+# /legal/privacy-policy, /legal/terms-of-service, /legal/cookie-policy,
+# /legal/data-policy, /legal/student-privacy, /legal/acceptable-use
+
+# =============================================================================
+# LLMs.txt DIRECTIVE
+# =============================================================================
+LLMs-txt: https://your-domain.com/llms.txt

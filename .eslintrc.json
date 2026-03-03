@@ -1,0 +1,47 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "plugin:jsx-a11y/recommended",
+    "prettier"
+  ],
+  "plugins": ["jsx-a11y"],
+  "rules": {
+    "jsx-a11y/anchor-is-valid": "error",
+    "jsx-a11y/click-events-have-key-events": "error",
+    "jsx-a11y/no-static-element-interactions": "error",
+    "jsx-a11y/no-noninteractive-element-interactions": "error",
+    "jsx-a11y/label-has-associated-control": "error",
+    "jsx-a11y/no-autofocus": "error",
+    "jsx-a11y/media-has-caption": "error",
+    "jsx-a11y/no-noninteractive-tabindex": "error",
+    "jsx-a11y/img-redundant-alt": "error",
+    "jsx-a11y/aria-role": "error",
+    "jsx-a11y/role-has-required-aria-props": "error",
+    "no-console": "error",
+    "prefer-const": "warn",
+    "no-var": "error"
+  },
+  "overrides": [
+    {
+      "files": ["src/lib/logger.ts"],
+      "rules": { "no-console": "off" }
+    },
+    {
+      "files": ["**/__tests__/**/*", "**/*.test.*", "**/*.spec.*"],
+      "plugins": ["@typescript-eslint", "jest-dom", "testing-library"],
+      "extends": [
+        "plugin:jest-dom/recommended",
+        "plugin:testing-library/react"
+      ],
+      "rules": {
+        "no-console": "off",
+        "@typescript-eslint/no-require-imports": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "testing-library/no-node-access": "warn",
+        "testing-library/render-result-naming-convention": "warn",
+        "jest-dom/prefer-to-have-class": "warn",
+        "jest-dom/prefer-enabled-disabled": "warn"
+      }
+    }
+  ]
+}

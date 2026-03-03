@@ -1,0 +1,131 @@
+/* TEAM */
+
+Platform: Ludwitt
+Website: https://your-domain.com
+Mission: Solving the global literacy and numeracy crisis through AI-powered adaptive learning
+
+/* WHAT WE DO */
+
+Ludwitt is an AI-powered adaptive learning platform designed to address
+the alarming decline in adult literacy and numeracy skills documented by
+PIAAC (Programme for the International Assessment of Adult Competencies).
+
+We serve learners of ALL ages:
+- K-12 students building foundational skills
+- Adults rebuilding literacy and numeracy capabilities
+- Families learning together
+- Educators seeking effective supplemental tools
+- Workforce development programs
+
+/* THE PROBLEM WE'RE SOLVING */
+
+PIAAC 2023 reveals a crisis:
+- US adult literacy scores dropped 12 points (271→258) from 2017-2023
+- US adult numeracy scores dropped 7 points (255→249) from 2017-2023
+- 28% of US adults now struggle with basic literacy (up from 19%)
+- 34% of US adults now struggle with basic numeracy (up from 29%)
+- Approximately 54 million Americans struggle with basic reading
+- Approximately 66 million Americans struggle with basic math
+
+This isn't just a US problem—most OECD countries show similar trends.
+
+/* OUR SOLUTION */
+
+Adaptive Learning Engine:
+- Real-time difficulty adjustment based on performance
+- Zone of Proximal Development optimization
+- Spaced repetition for long-term retention
+- Mastery-based progression
+
+AI-Powered Features:
+- Personalized tutoring and explanations
+- Intelligent answer validation
+- Custom problem generation
+- Progress analytics
+
+Subjects Covered:
+- Mathematics (arithmetic through algebra)
+- Reading comprehension
+- Vocabulary development
+- Logic and critical thinking
+- Latin (classical language)
+- Greek (classical language)
+- Writing skills
+
+Engagement Systems:
+- Experience points (XP)
+- Daily streaks
+- Achievement badges
+- Leaderboards
+- Study rooms
+- Learning cohorts
+
+/* LEARNING SCIENCE FOUNDATIONS */
+
+Our approach is grounded in research:
+
+1. Zone of Proximal Development (Vygotsky)
+   - Keep learners optimally challenged
+
+2. Spaced Repetition (Ebbinghaus)
+   - Review at optimal intervals for retention
+
+3. Mastery Learning (Bloom)
+   - Demonstrate competence before advancing
+
+4. Feedback Impact (Hattie)
+   - Immediate, specific feedback on every problem
+
+5. Growth Mindset (Dweck)
+   - Emphasize effort and improvement
+
+/* TECHNOLOGY */
+
+Frontend: Next.js 15, React 19, TypeScript, Tailwind CSS
+Backend: Next.js API Routes, Firebase
+AI: Anthropic Claude
+Payments: Stripe
+Hosting: Vercel
+
+/* WHY Ludwitt */
+
+For Adults:
+- Private, stigma-free learning environment
+- Learn at your own pace, on your schedule
+- AI tutor available 24/7
+- Practical, real-world skill applications
+
+For Students:
+- Personalized difficulty—never too hard or too easy
+- Gamification makes practice engaging
+- Immediate help when stuck
+- Build solid foundations for future learning
+
+For Educators:
+- Data-driven insights on student needs
+- Differentiation made easy
+- AI handles practice and feedback
+- Scalable intervention tool
+
+For Employers:
+- Assess and improve workforce skills
+- Reduce training costs
+- Improve productivity
+- Support employee development
+
+/* CONTACT */
+
+Website: https://your-domain.com
+Platform: https://your-domain.com/login
+Pricing: https://your-domain.com/pricing
+About: https://your-domain.com/about
+Adult Learning: https://your-domain.com/for-adults
+Research: https://your-domain.com/research
+
+/* SITE */
+
+Last Updated: January 2026
+Standards: HTML5, CSS3, ES2024
+Components: React Server Components, Client Components
+Frameworks: Next.js App Router
+Software: VS Code, Cursor, GitHub, Vercel

@@ -1,0 +1,1082 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================================================
+    // HELPER FUNCTIONS
+    // ============================================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    // Helper to check if progressId starts with userId (for userId_math, userId_reading format)
+    function isProgressOwner(progressId) {
+      return isAuthenticated() && progressId.matches('^' + request.auth.uid + '(_.*)?$');
+    }
+    
+    // ============================================================================
+    // Ludwitt SPECIFIC COLLECTIONS - SECURED
+    // ============================================================================
+    
+    // User Progress & Onboarding
+    match /githubSetupProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    match /cursorSetupProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    match /personalWebsiteProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    match /vercelDeploymentProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Claude Code path collections
+    match /claudeCodeSetupProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /tweetFunctionProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /firebaseDeployProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // OpenClaw path collections
+    match /openclawSetupProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /openclawWebsiteProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /openclawDeployProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // Open source PR progress
+    match /opensourcePrProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    match /loomVideoProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    match /localSiteVerifications/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    match /verificationCodeLookup/{code} {
+      allow read, write: if false; // Backend only
+    }
+    
+    // User Profiles & Data
+    match /userProfiles/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+    }
+    
+    match /userVisions/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    // ============================================================================
+    // USERS COLLECTION - Core user data
+    // ============================================================================
+    
+    match /users/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+      
+      // Subcollections
+      match /helpHistory/{docId} {
+        allow read: if isOwner(userId);
+        allow write: if false; // Backend only
+      }
+      
+      match /unlockedContent/{docId} {
+        allow read: if isOwner(userId);
+        allow write: if false; // Backend only
+      }
+      
+      match /basics_progress/{subject} {
+        allow read: if isOwner(userId);
+        allow write: if false; // Backend only
+      }
+      
+      match /daily/{date} {
+        allow read: if isOwner(userId);
+        allow write: if false; // Backend only
+      }
+      
+      // Translation progress for Latin/Greek
+      match /translation_progress/{language} {
+        allow read: if isOwner(userId);
+        allow write: if false; // Backend only
+      }
+      
+      // Logic progress tracking
+      match /logic_progress/{docId} {
+        allow read: if isOwner(userId);
+        allow write: if false; // Backend only
+      }
+    }
+    
+    // ============================================================================
+    // Projects & Portfolio
+    // ============================================================================
+    
+    match /userProjects/{projectId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    match /userProjectProgress/{projectId} {
+      // Format: userId_projectType - only owner can write
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && projectId.matches('^' + request.auth.uid + '_.*');
+    }
+    
+    match /portfolioItems/{itemId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    match /userPortfolios/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(userId);
+    }
+    
+    match /projectLoomVideos/{projectId} {
+      // Users can read all, but only create/update if they own the video
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // ============================================================================
+    // Basics Dashboard
+    // ============================================================================
+    
+    // FIXED: Support both userId and userId_math/userId_reading formats
+    match /userBasicsProgress/{progressId} {
+      allow read: if isAuthenticated() && isProgressOwner(progressId);
+      allow write: if false; // Backend only
+    }
+    
+    match /basicsEngagement/{engagementId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    match /basicsProblemsCache/{cacheId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    // Math and Reading problem caches - Backend only
+    match /mathProblemsCache/{problemId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    match /readingExercisesCache/{exerciseId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    match /videoExplanations/{videoId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    match /basicsLeaderboard/{entryId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    match /basics-progress/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Backend only
+    }
+    
+    match /basics-reading-aloud-attempts/{attemptId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+    
+    match /basics-word-learning-attempts/{attemptId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+    
+    // ============================================================================
+    // Surveys
+    // ============================================================================
+    
+    match /surveyResponses/{responseId} {
+      allow read: if false; // Admin only via backend
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+    
+    match /surveyProgress/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    // ============================================================================
+    // Mentor Applications
+    // ============================================================================
+    
+    match /mentorApplications/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId);
+      allow update: if false; // Admin only
+    }
+    
+    // ============================================================================
+    // Achievements & Gamification
+    // ============================================================================
+    
+    match /userAchievements/{achievementId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+    
+    match /userStats/{userId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    match /pointsActivity/{activityId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+    
+    // Kudos - Social recognition
+    match /kudos/{kudosId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+    }
+    
+    // ============================================================================
+    // NEW FEATURES - Daily Challenges
+    // ============================================================================
+    
+    match /dailyChallenges/{challengeId} {
+      allow read, write: if isAuthenticated() && challengeId.matches('^' + request.auth.uid + '_.*');
+    }
+    
+    // ============================================================================
+    // NEW FEATURES - Quick Wins
+    // ============================================================================
+    
+    match /quickWins/{winId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // ============================================================================
+    // NEW FEATURES - Study Rooms
+    // ============================================================================
+    
+    match /studyRooms/{roomId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.creatorId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        resource.data.creatorId == request.auth.uid ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['currentParticipants'])
+      );
+      allow delete: if isAuthenticated() && resource.data.creatorId == request.auth.uid;
+    }
+    
+    match /roomParticipants/{participantId} {
+      allow read: if isAuthenticated();
+      allow create, update: if isAuthenticated() && participantId.matches('.*_' + request.auth.uid + '$');
+      allow delete: if isAuthenticated() && participantId.matches('.*_' + request.auth.uid + '$');
+    }
+    
+    match /roomMessages/{messageId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && 
+        request.resource.data.userId == request.auth.uid &&
+        request.resource.data.message.size() <= 500;
+    }
+    
+    match /roomActivities/{activityId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+    
+    // Live Sessions (tutoring)
+    match /liveSessions/{sessionId} {
+      // Users can read all, create their own, update if participant
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.creatorId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        resource.data.creatorId == request.auth.uid ||
+        resource.data.participants[request.auth.uid] == true
+      );
+      allow delete: if isAuthenticated() && resource.data.creatorId == request.auth.uid;
+    }
+    
+    // ============================================================================
+    // Social Features
+    // ============================================================================
+    
+    match /userFollows/{followId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.followerId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.followerId == request.auth.uid;
+    }
+    
+    match /reactions/{reactionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // ============================================================================
+    // Cohorts
+    // ============================================================================
+    
+    match /cohorts/{cohortId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.creatorId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        resource.data.creatorId == request.auth.uid ||
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(['currentSize'])
+      );
+      allow delete: if isAuthenticated() && resource.data.creatorId == request.auth.uid;
+    }
+    
+    match /cohortMembers/{memberId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    match /cohortMessages/{messageId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.message.size() <= 500;
+    }
+    
+    match /cohortSessions/{sessionId} {
+      // Read for all authenticated, write only for cohort members/creators
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.creatorId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        resource.data.creatorId == request.auth.uid ||
+        resource.data.mentorId == request.auth.uid
+      );
+      allow delete: if isAuthenticated() && resource.data.creatorId == request.auth.uid;
+    }
+    
+    // Cohort Creators - tracks who can create cohorts
+    match /cohortCreators/{creatorId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only (via webhook)
+    }
+    
+    // Cohort Mentor Assignments
+    match /cohortMentorAssignments/{assignmentId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    // Learning Modules for cohorts
+    match /learningModules/{moduleId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    // Student Progress in cohorts
+    match /studentProgress/{progressId} {
+      // progressId format: cohortId_userId
+      allow read: if isAuthenticated();
+      allow write: if isAuthenticated() && progressId.matches('.*_' + request.auth.uid + '$');
+    }
+    
+    // ============================================================================
+    // Messaging
+    // ============================================================================
+    
+    match /messages/{messageId} {
+      // Users can read messages where they are sender, recipient, or part of conversation
+      allow read: if isAuthenticated() && (
+        resource.data.senderId == request.auth.uid ||
+        resource.data.recipientId == request.auth.uid
+      );
+      allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+      allow update: if false; // Messages are immutable
+      allow delete: if false; // Messages are preserved
+    }
+    
+    match /conversations/{conversationId} {
+      // Participants can read using array-contains query
+      // The rule must match the query pattern: where('participantIds', 'array-contains', uid)
+      allow read: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+      allow create: if isAuthenticated() && request.auth.uid in request.resource.data.participantIds;
+      allow update: if isAuthenticated() && request.auth.uid in resource.data.participantIds;
+      allow delete: if false; // Conversations are preserved
+    }
+    
+    match /notifications/{notificationId} {
+      allow read: if isAuthenticated() && resource.data.recipientId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.recipientId == request.auth.uid;
+      allow update: if isAuthenticated() && resource.data.recipientId == request.auth.uid;
+    }
+    
+    match /aiConversations/{conversationId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // ============================================================================
+    // Resources
+    // ============================================================================
+    
+    match /resourceBookmarks/{bookmarkId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    // ============================================================================
+    // Sessions
+    // ============================================================================
+    
+    match /sessionBookings/{bookingId} {
+      allow read: if isAuthenticated() && (
+        resource.data.studentId == request.auth.uid ||
+        resource.data.mentorId == request.auth.uid
+      );
+      allow create: if isAuthenticated() && request.resource.data.studentId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        resource.data.studentId == request.auth.uid ||
+        resource.data.mentorId == request.auth.uid
+      );
+    }
+    
+    // ============================================================================
+    // API & Webhooks
+    // ============================================================================
+    
+    match /apiKeys/{keyId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    match /apiKeyUsage/{usageId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    match /webhooks/{webhookId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    match /webhookDeliveries/{deliveryId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    // ============================================================================
+    // OAuth Integrations (GitHub, Google Drive, Slack)
+    // ============================================================================
+    
+    // User OAuth integrations - users can read their own, backend writes
+    match /userIntegrations/{integrationId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only - contains tokens
+    }
+    
+    // OAuth state tokens for CSRF protection - backend only
+    match /oauthStates/{stateId} {
+      allow read, write: if false; // Backend only
+    }
+    
+    // Webhook subscriptions - users can read their own
+    match /webhookSubscriptions/{webhookId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only - manages secrets
+    }
+    
+    match /webVitals/{vitalId} {
+      allow read: if false; // Backend only
+      allow create: if isAuthenticated();
+    }
+    
+    // ============================================================================
+    // Customer Documents & Multi-Developer System
+    // ============================================================================
+    
+    // Helper to check if user is a developer (defined here for use in this section)
+    // Note: isDeveloper() is also defined in Customers section, Firestore allows this
+    
+    match /customerDocuments/{documentId} {
+      // Read: Only customers or assigned developers can read their documents
+      allow read: if isAuthenticated() && (
+        resource.data.customerId == request.auth.uid ||
+        resource.data.assignedDeveloperId == request.auth.uid ||
+        resource.data.assignedTo == request.auth.uid
+      );
+      
+      // Create: Only by document owner (customer) or assigned developer
+      allow create: if isAuthenticated() && (
+        request.resource.data.customerId == request.auth.uid ||
+        request.resource.data.developerId == request.auth.uid
+      );
+      
+      // Update: By owner, assigned developer, or team developers
+      allow update: if isAuthenticated() && (
+        resource.data.customerId == request.auth.uid ||
+        resource.data.developerId == request.auth.uid ||
+        resource.data.developers[request.auth.uid] == true ||
+        resource.data.assignedTo == request.auth.uid
+      );
+      
+      // Delete: Only by document owner
+      allow delete: if isAuthenticated() && resource.data.customerId == request.auth.uid;
+    }
+    
+    match /developerProfiles/{developerId} {
+      // All authenticated users can read profiles, only owners can write
+      allow read: if isAuthenticated();
+      allow write: if isOwner(developerId);
+    }
+    
+    match /projects/{projectId} {
+      // All authenticated users can read projects
+      // Write restricted to project owners or assigned developers
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && (
+        request.resource.data.ownerId == request.auth.uid ||
+        request.resource.data.customerId == request.auth.uid
+      );
+      allow update: if isAuthenticated() && (
+        resource.data.ownerId == request.auth.uid ||
+        resource.data.customerId == request.auth.uid ||
+        resource.data.developers[request.auth.uid] == true
+      );
+      allow delete: if isAuthenticated() && resource.data.ownerId == request.auth.uid;
+    }
+    
+    match /clientRequirements/{requirementId} {
+      // Read: Only participants (customer + assigned developer) can read
+      allow read: if isAuthenticated() && (
+        resource.data.customerId == request.auth.uid ||
+        request.auth.uid in resource.data.participantIds
+      );
+      allow create: if isAuthenticated() && request.resource.data.creatorId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        resource.data.creatorId == request.auth.uid ||
+        resource.data.developerId == request.auth.uid
+      );
+      allow delete: if isAuthenticated() && resource.data.creatorId == request.auth.uid;
+    }
+    
+    match /developmentSessions/{sessionId} {
+      // Session participants can read and update
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.developerId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        resource.data.developerId == request.auth.uid ||
+        resource.data.customerId == request.auth.uid
+      );
+      allow delete: if isAuthenticated() && resource.data.developerId == request.auth.uid;
+    }
+    
+    match /documentCommunications/{communicationId} {
+      // Read: Only participants (customer uid + developer uid) can read
+      allow read: if isAuthenticated() && (
+        resource.data.customerId == request.auth.uid ||
+        request.auth.uid in resource.data.participantIds
+      );
+      allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+      allow update: if false; // Communications are immutable
+      allow delete: if false; // Communications are preserved for audit trail
+    }
+    
+    // Document History tracking
+    match /documentHistory/{historyId} {
+      allow read: if isAuthenticated() && resource.data.customerId == request.auth.uid;
+      allow create: if false; // Backend only
+    }
+
+    // Customer Notifications (e.g. document approved confirmation)
+    match /customerNotifications/{notificationId} {
+      allow read: if isAuthenticated() && resource.data.customerId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+    
+    // Developer Notifications
+    match /developerNotifications/{notificationId} {
+      allow read: if isAuthenticated() && resource.data.developerId == request.auth.uid;
+      allow create: if false; // Backend only
+      allow update: if isAuthenticated() && resource.data.developerId == request.auth.uid;
+    }
+    
+    // Developer Activity Log - dead collection, backend only
+    match /developerActivity/{activityId} {
+      allow read, write: if false;
+    }
+    
+    // Developer API Keys - Backend managed, users can read their own
+    match /developerApiKeys/{keyId} {
+      // Users can read their own keys (userId field matches)
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      // All writes through backend only (never expose key hash to client)
+      allow write: if false;
+    }
+    
+    // ============================================================================
+    // Customers & Subscriptions
+    // ============================================================================
+    
+    match /customers/{customerId} {
+      // All authenticated users can read (needed for developer dashboard to show customer info)
+      // Only owners can write their own data
+      allow read: if isAuthenticated();
+      allow write: if isOwner(customerId);
+    }
+    
+    match /userSubscriptions/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Backend only (Stripe webhooks)
+    }
+    
+    // Invoices - users can read their own
+    match /invoices/{invoiceId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    // ============================================================================
+    // Voice Notes & Calendar Integration
+    // ============================================================================
+    
+    match /voiceNotes/{recordingId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    match /calendarIntegrations/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    match /meetingBots/{botId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+    
+    // ============================================================================
+    // Analytics & Events
+    // ============================================================================
+    
+    match /november_2025_goals_events/{eventId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+    
+    // ============================================================================
+    // Writing Competition
+    // ============================================================================
+    
+    // Competitions - read by all authenticated, write by backend only
+    match /writingCompetitions/{competitionId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    // Submissions - users can read all, create their own
+    match /writingSubmissions/{submissionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow update: if false; // Backend only (for winner marking)
+    }
+    
+    // Winners - read by all authenticated, write by backend only
+    match /writingWinners/{winnerId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    // Drafts - stored under users collection
+    match /users/{userId}/writingDrafts/{draftId} {
+      allow read, write: if isOwner(userId);
+    }
+    
+    // ============================================================================
+    // Learning Companions
+    // ============================================================================
+    
+    // User companions data (virtual pet/companion system)
+    match /userCompanions/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Backend only - saves via API
+    }
+    
+    // ============================================================================
+    // Near Peer Tutoring System
+    // ============================================================================
+    
+    match /tutor_requests/{requestId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.studentId == request.auth.uid;
+      allow update: if isAuthenticated() && (
+        resource.data.studentId == request.auth.uid ||
+        resource.data.tutorId == request.auth.uid
+      );
+      allow delete: if isAuthenticated() && resource.data.studentId == request.auth.uid;
+    }
+    
+    match /tutor_sessions/{sessionId} {
+      allow read: if isAuthenticated() && (
+        resource.data.studentId == request.auth.uid ||
+        resource.data.tutorId == request.auth.uid
+      );
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated() && (
+        resource.data.studentId == request.auth.uid ||
+        resource.data.tutorId == request.auth.uid
+      );
+    }
+    
+    match /tutor_messages/{messageId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.senderId == request.auth.uid;
+    }
+    
+    match /tutor_ratings/{ratingId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.raterId == request.auth.uid;
+    }
+    
+    // ============================================================================
+    // Educator System
+    // ============================================================================
+    
+    match /educatorGroups/{groupId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.educatorId == request.auth.uid;
+      allow update, delete: if isAuthenticated() && resource.data.educatorId == request.auth.uid;
+    }
+    
+    // ============================================================================
+    // Learning Study Applications
+    // ============================================================================
+    
+    match /learning_study_applications/{applicationId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated();
+      allow update: if false; // Backend only
+    }
+    
+    // ============================================================================
+    // Enhanced Learning (Cognitive Profiles, Analytics)
+    // ============================================================================
+    
+    match /cognitiveProfiles/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Backend only
+    }
+    
+    match /spacingSchedulers/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Backend only
+    }
+    
+    match /metacognitiveSessions/{sessionId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+    
+    match /learningAnalytics/{analyticsId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+    
+    // ============================================================================
+    // Technical Moat System Collections
+    // ============================================================================
+    
+    // Telemetry data - Backend only
+    match /telemetry_raw/{docId} {
+      allow read, write: if false; // Backend only
+    }
+    
+    match /telemetry_aggregated/{docId} {
+      allow read, write: if false; // Backend only
+    }
+    
+    // Misconception profiles - users can read their own
+    match /misconceptionProfiles/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Backend only
+    }
+    
+    // Personalized memory models - users can read their own
+    match /personalizedMemoryModels/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Backend only
+    }
+    
+    // Transfer learning profiles - users can read their own
+    match /transferLearningProfiles/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Backend only
+    }
+    
+    // Cognitive load profiles - users can read their own
+    match /cognitiveLoadProfiles/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Backend only
+    }
+    
+    // Socratic dialogue sessions - users can read their own
+    match /socraticSessions/{sessionId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+    
+    // ============================================================================
+    // Mentors
+    // ============================================================================
+    
+    match /mentors/{mentorId} {
+      allow read: if isAuthenticated();
+      allow write: if isOwner(mentorId);
+    }
+    
+    // ============================================================================
+    // Viral Challenges & Rewards
+    // ============================================================================
+    
+    match /viralChallenges/{challengeId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+    
+    match /challengeParticipants/{participantId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
+    }
+    
+    match /claimedRewards/{claimId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow create: if isAuthenticated() && request.resource.data.userId == request.auth.uid;
+    }
+    
+    // ============================================================================
+    // Parent Reports
+    // ============================================================================
+    
+    match /parentReports/{reportId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+    
+    // ============================================================================
+    // Credit System
+    // ============================================================================
+    
+    // Credit transactions - users can read their own, backend writes
+    match /credit_transactions/{transactionId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+    
+    // Credit reservations - users can read their own, backend writes
+    match /credit_reservations/{reservationId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+    
+    // ============================================================================
+    // University System
+    // ============================================================================
+
+    // Learning paths - users can read their own or published paths, backend writes
+    match /universityLearningPaths/{pathId} {
+      allow read: if isAuthenticated() &&
+        (resource.data.userId == request.auth.uid || resource.data.isPublished == true);
+      allow write: if false; // Backend only
+    }
+
+    // Courses - users can read their own, backend writes
+    match /universityCourses/{courseId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+
+    // Student profiles - owner can read, backend writes
+    match /universityStudentProfiles/{userId} {
+      allow read: if isOwner(userId);
+      allow write: if false; // Backend only
+    }
+
+    // Business ideas - users can read their own, backend writes
+    match /universityBusinessIdeas/{ideaId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+
+    // Thesis ideas - users can read their own, backend writes
+    match /universityThesisIdeas/{ideaId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+
+    // Professor assignments - authenticated can read, backend writes
+    match /professorAssignments/{assignmentId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+
+    // Idea comments - authenticated can read, backend writes
+    match /ideaComments/{commentId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+
+    // Deliverable comments - authenticated can read, backend writes
+    match /deliverableComments/{commentId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+
+    // Professor profiles - authenticated can read, backend writes
+    match /professorProfiles/{professorId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+
+    // Professor documents - authenticated can read, backend writes
+    match /professorDocuments/{documentId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+
+    // Office hours bookings - student or professor involved can read, backend writes
+    match /officeHoursBookings/{bookingId} {
+      allow read: if isAuthenticated() &&
+        (resource.data.studentId == request.auth.uid || resource.data.professorId == request.auth.uid);
+      allow write: if false; // Backend only
+    }
+
+    // Peer reviews - submitter or reviewer can read, backend writes
+    match /peerReviews/{reviewId} {
+      allow read: if isAuthenticated() &&
+        (resource.data.submitterId == request.auth.uid || resource.data.reviewerId == request.auth.uid);
+      allow write: if false; // Backend only
+    }
+
+    // Peer review badges - all authenticated can read (for profiles), backend writes
+    match /peerReviewBadges/{badgeId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+
+    // Contribution PRs - owner can read, backend writes
+    match /contributionPRs/{prId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+
+    // Contribution badges - all authenticated can read (for profiles), backend writes
+    match /contributionBadges/{badgeId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+
+    // Exploration sessions - owner can read, backend writes
+    match /explorationSessions/{sessionId} {
+      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
+      allow write: if false; // Backend only
+    }
+
+    // Submission history - authenticated can read, backend writes
+    match /submissionHistory/{eventId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+
+    // Course announcements - authenticated can read, backend writes
+    match /courseAnnouncements/{announcementId} {
+      allow read: if isAuthenticated();
+      allow write: if false; // Backend only
+    }
+
+    // Notification preferences - owner reads/writes own
+    match /notificationPreferences/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // ============================================================================
+    // Backend-Only Collections (Admin SDK bypasses rules, but block client access)
+    // ============================================================================
+
+    // Independent Studies - Backend only
+    match /independentStudies/{studyId} {
+      allow read, write: if false;
+    }
+
+    // Drive integrations - Backend only (contains OAuth tokens)
+    match /driveIntegrations/{integrationId} {
+      allow read, write: if false;
+    }
+
+    // AI crawler analytics - Backend only
+    match /ai_crawler_visits/{visitId} {
+      allow read, write: if false;
+    }
+
+    // Stripe idempotency - Backend only
+    match /stripe_processed_events/{eventId} {
+      allow read, write: if false;
+    }
+
+    // Mentor profiles - Backend only
+    match /mentorProfiles/{profileId} {
+      allow read, write: if false;
+    }
+
+    // Legacy educator subscriptions - Backend only
+    match /educatorSubscriptions/{subId} {
+      allow read, write: if false;
+    }
+
+    // ============================================================================
+    // DEFAULT RULE - DENY ALL UNLISTED COLLECTIONS
+    // Security best practice: deny by default, allow explicitly
+    // ============================================================================
+    
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

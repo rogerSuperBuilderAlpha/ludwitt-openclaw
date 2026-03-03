@@ -1,0 +1,287 @@
+@import 'tailwindcss';
+@import '../styles/basics.css';
+
+/* ============================================================================
+   Basics Dashboard Design Tokens
+   All tokens are defined in basics.css - this file just uses them
+   ============================================================================ */
+
+/* ============================================================================
+   Basics Card Utility Classes
+   ============================================================================ */
+
+.basics-card {
+  background: var(--b-bg-card);
+  border: 1px solid var(--b-border-default);
+  border-radius: var(--b-radius-xl);
+  box-shadow: var(--b-shadow-md);
+  transition: var(--b-transition-default);
+  color: var(--b-text-primary);
+}
+
+.basics-card-interactive {
+  cursor: pointer;
+}
+
+.basics-card-interactive:hover {
+  box-shadow: var(--b-shadow-lg);
+  transform: translateY(-1px);
+}
+
+.basics-card-interactive:active {
+  transform: translateY(0) scale(0.995);
+}
+
+.basics-section {
+  background: var(--b-bg-card);
+  border: 1.5px solid var(--b-border-medium);
+  border-radius: var(--b-radius-xl);
+  box-shadow: var(--b-shadow-md);
+  overflow: hidden;
+  color: var(--b-text-primary);
+}
+
+.basics-section-header {
+  background: var(--b-bg-muted);
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--b-border-light);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.basics-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--b-radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--b-shadow-sm);
+}
+
+/* Subject-specific section styles */
+.basics-section-math {
+  border-color: var(--b-math-border);
+}
+.basics-section-math .basics-section-header {
+  background: var(--b-math-light);
+}
+
+.basics-section-reading {
+  border-color: var(--b-reading-border);
+}
+.basics-section-reading .basics-section-header {
+  background: var(--b-reading-light);
+}
+
+.basics-section-logic {
+  border-color: var(--b-logic-border);
+}
+.basics-section-logic .basics-section-header {
+  background: var(--b-logic-light);
+}
+
+.basics-section-writing {
+  border-color: var(--b-writing-border);
+}
+.basics-section-writing .basics-section-header {
+  background: var(--b-writing-light);
+}
+
+.basics-section-latin {
+  border-color: var(--b-latin-border);
+}
+.basics-section-latin .basics-section-header {
+  background: var(--b-latin-light);
+}
+
+.basics-section-greek {
+  border-color: var(--b-greek-border);
+}
+.basics-section-greek .basics-section-header {
+  background: var(--b-greek-light);
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-in-right {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+body {
+  @apply antialiased;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+/* Global cursor styles for interactive elements */
+button,
+[role='button'],
+[type='button'],
+[type='submit'],
+[type='reset'],
+summary,
+select,
+a[href],
+label[for],
+.clickable,
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+button:disabled,
+[role='button'][aria-disabled='true'],
+[type='button']:disabled,
+[type='submit']:disabled,
+.disabled {
+  cursor: not-allowed !important;
+}
+
+/* Consistent checkbox styling */
+input[type='checkbox'] {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  border-radius: 0.25rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input[type='checkbox']:checked {
+  animation: checkboxPop 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes checkboxPop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Smooth animations for steps */
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.92);
+  }
+  60% {
+    opacity: 0.8;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-in {
+  animation: slideInFromBottom 0.3s ease-out;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.animate-scale-in {
+  animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.slide-in-from-bottom {
+  animation-name: slideInFromBottom;
+}
+
+.fade-in-scale {
+  animation: fadeInScale 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.animate-slide-in-from-top {
+  animation: slideInFromTop 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Staggered animation delays for navigation items */
+.animation-delay-100 {
+  animation: slideInFromTop 0.6s cubic-bezier(0.16, 1, 0.3, 1) 100ms both;
+}
+
+.animation-delay-200 {
+  animation: slideInFromTop 0.6s cubic-bezier(0.16, 1, 0.3, 1) 200ms both;
+}
+
+.animation-delay-300 {
+  animation: slideInFromTop 0.6s cubic-bezier(0.16, 1, 0.3, 1) 300ms both;
+}
+
+.animation-delay-400 {
+  animation: slideInFromTop 0.6s cubic-bezier(0.16, 1, 0.3, 1) 400ms both;
+}
+
+/* Hide scrollbar */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+  scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Safari and Chrome */
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}

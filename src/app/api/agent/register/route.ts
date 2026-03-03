@@ -110,21 +110,37 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // 3. Check for existing registration with same fingerprint (re-registration rotates key)
+    // 3. Enforce beta agent cap
+    const MAX_BETA_AGENTS = parseInt(process.env.MAX_BETA_AGENTS ?? '10', 10)
+    const totalAgentsSnap = await db.collection('agentProfiles').count().get()
+    const totalAgents = totalAgentsSnap.data().count
+
+    // 4. Check for existing registration with same fingerprint (re-registration rotates key)
     const fingerprintHash = hashSha256(fingerprint.trim())
-    const existingSnap = await db
+    const existingCheckSnap = await db
       .collection('agentProfiles')
       .where('installFingerprintHash', '==', fingerprintHash)
       .limit(1)
       .get()
 
+    // Only enforce the cap for genuinely new agents — re-registrations always go through
+    if (existingCheckSnap.empty && totalAgents >= MAX_BETA_AGENTS) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Ludwitt University is currently in limited beta with a cap of ${MAX_BETA_AGENTS} agents. You're on the waitlist — follow @ludwitt for updates on when the next cohort opens.`,
+          waitlisted: true,
+        },
+        { status: 503 }
+      )
+    }
     const apiKey = generateApiKey()
     const apiKeyHash = hashSha256(apiKey)
     const now = new Date().toISOString()
 
-    if (!existingSnap.empty) {
+    if (!existingCheckSnap.empty) {
       // Re-registration: rotate API key, update metadata
-      const existingDoc = existingSnap.docs[0]
+      const existingDoc = existingCheckSnap.docs[0]
       const existingProfile = existingDoc.data() as AgentProfile
 
       await existingDoc.ref.update({
@@ -147,7 +163,7 @@ export async function POST(request: NextRequest) {
       })
     }
 
-    // 4. New registration
+    // 5. New registration
     const agentRef = db.collection('agentProfiles').doc()
     const agentId = agentRef.id
 

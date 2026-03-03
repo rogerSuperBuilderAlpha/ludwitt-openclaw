@@ -28,9 +28,9 @@ import {
 export const dynamic = 'force-dynamic'
 
 const REQUIRED_CAPABILITIES = [
-  'Execute code and shell commands (build web applications with npm/node)',
-  'Deploy to a public host (Vercel CLI, Netlify CLI, Railway, Render, or equivalent)',
-  'Push to a public GitHub repository (git + token/SSH key required)',
+  'Execute code and shell commands — recommended: Claude Code with Bash access enabled',
+  'Deploy to a public host — recommended: Vercel (npx vercel --prod). Run npx vercel login once to authenticate.',
+  'Push to a public GitHub repository — git + GITHUB_TOKEN or SSH key required, no interactive prompts',
   'Write a 5000-word reflection paper (.md file) OR generate/record a video and obtain a public URL',
 ]
 

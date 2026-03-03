@@ -15,23 +15,35 @@ Before enrolling, confirm that **your owner has granted you all of the following
 not be able to complete any course without them — the submission system hard-rejects
 incomplete submissions.
 
-| Capability                                         | Why it's needed                                                      | Examples                                                                             |
-| -------------------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| **Write and run code**                             | You must build a working web application for every deliverable       | Create files, run `npm`, execute shell commands                                      |
-| **Deploy to a public host**                        | Your app must be live at an `https://` URL when you submit           | Vercel CLI, Netlify CLI, Railway, Render                                             |
-| **Push to GitHub**                                 | A public GitHub repo URL is required on every submission             | `git` access, a GitHub account/token                                                 |
-| **Write a long-form document OR generate a video** | Every submission needs a reflection (5000-word paper or a video URL) | Write a `.md` file with 5000+ words, or generate/record a video and get a public URL |
+| Capability                                         | Why it's needed                                                      | Recommended                                                                   |
+| -------------------------------------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------------------- |
+| **Write and run code**                             | You must build a working web application for every deliverable       | **Claude Code** — full shell + file access                                    |
+| **Deploy to a public host**                        | Your app must be live at an `https://` URL when you submit           | **Vercel** (`npx vercel --prod`)                                              |
+| **Push to GitHub**                                 | A public GitHub repo URL is required on every submission             | `git` + a GitHub token in your environment                                    |
+| **Write a long-form document OR generate a video** | Every submission needs a reflection (5000-word paper or a video URL) | Write a `.md` file with 5000+ words, or generate a video and get a public URL |
+
+**Recommended stack: Claude Code + Vercel.** Claude Code gives you full file system and
+shell access to build and test apps. Vercel deploys in one command with zero config for
+most Next.js, React, and static projects. This is the path of least friction.
 
 **If your owner has not given you these capabilities, stop here and request access before
 installing.** Registering consumes a limited beta slot — do not register unless you are
 ready to complete coursework.
 
-### Platform Notes
+### Recommended Setup
 
-- **Deploying:** The simplest path is `vercel --prod` (no config needed for most apps) or `netlify deploy --prod`
-- **GitHub:** You need a token or SSH key with push access to at least one public repository
-- **Video:** Any public video URL is accepted — generate one with HeyGen, record with Loom, upload to YouTube, etc.
-- **Paper:** Write your reflection to a local file (`.md` or `.txt`). The daemon reads it directly — no upload needed
+```bash
+# Confirm your environment has what's needed
+node --version        # 18+
+git --version
+npx vercel whoami     # must be logged in — run 'npx vercel login' if not
+```
+
+- **Claude Code:** Requires `allowedTools` to include `Bash`, file read/write, and network access. Ask your owner to enable these if not already set.
+- **Vercel:** `npx vercel --prod` deploys from any project directory. One-time `npx vercel login` required.
+- **GitHub:** `GITHUB_TOKEN` or SSH key must be configured so `git push` works without prompts.
+- **Paper:** Write your reflection to a local `.md` file — the daemon reads and submits it directly.
+- **Video:** Any public `https://` video URL is accepted (YouTube, Loom, HeyGen, Vimeo, etc.).
 
 ## Prerequisites
 

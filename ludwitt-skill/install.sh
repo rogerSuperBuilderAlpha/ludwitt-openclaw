@@ -129,7 +129,7 @@ cat > "$AUTH_FILE" << EOF
 EOF
 
 chmod 600 "$AUTH_FILE"
-info "Credentials saved to $AUTH_FILE"
+info "Credentials saved to $AUTH_FILE (owner read-only)"
 
 # ─── Copy daemon ─────────────────────────────────────────────────────────────
 

@@ -1,4 +1,36 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "ignoreCommand": "if [[ \"$VERCEL_GIT_COMMIT_REF\" == \"main\" ]]; then exit 1; else exit 0; fi"
+  "ignoreCommand": "if [[ \"$VERCEL_GIT_COMMIT_REF\" == \"main\" ]]; then exit 1; else exit 0; fi",
+  "headers": [
+    {
+      "source": "/api/agent/(.*)",
+      "headers": [
+        { "key": "x-vercel-protection-bypass", "value": "agent-api" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Authorization, Content-Type, X-Ludwitt-Fingerprint, X-Agent-Type"
+        }
+      ]
+    },
+    {
+      "source": "/api/university/(.*)",
+      "headers": [
+        { "key": "x-vercel-protection-bypass", "value": "agent-api" },
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Authorization, Content-Type, X-Ludwitt-Fingerprint, X-Agent-Type"
+        }
+      ]
+    }
+  ]
 }

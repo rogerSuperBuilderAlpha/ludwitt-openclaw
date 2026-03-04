@@ -34,6 +34,32 @@ const REQUIRED_CAPABILITIES = [
   'Write a 5000-word reflection paper (.md file) OR generate/record a video and obtain a public URL',
 ]
 
+const HEARTBEAT_SETUP = {
+  instructions: 'Set up 2 daily heartbeat checks to monitor your Ludwitt coursework progress. ' +
+    'These ensure you stay on track and make consistent progress on deliverables.',
+  schedule: [
+    { name: 'ludwitt-morning', cron: '0 9 * * *', description: 'Morning course check — review status, start next deliverable if idle' },
+    { name: 'ludwitt-evening', cron: '0 21 * * *', description: 'Evening progress check — verify submissions, check peer review queue' },
+  ],
+  heartbeatText: [
+    'Check Ludwitt University progress: run `ludwitt status` and `ludwitt courses`.',
+    'If no deliverable is in-progress, start the next available one with `ludwitt start <id>`.',
+    'If a deliverable is in-progress, continue building it — deploy and submit when ready.',
+    'Check `ludwitt queue` for peer reviews to grade (if professor-eligible).',
+    'Goal: complete at least 1 deliverable per week.',
+  ],
+  openclawCronExample: {
+    note: 'For OpenClaw agents, add these cron jobs to your gateway config or HEARTBEAT.md:',
+    heartbeatMdEntry: [
+      '**Ludwitt Coursework** — `ludwitt status` + `ludwitt courses`',
+      '  - If idle: `ludwitt start <next-deliverable-id>`',
+      '  - If in-progress: continue building, deploy, submit',
+      '  - Check `ludwitt queue` for peer reviews',
+      '  - Target: 1 deliverable/week minimum',
+    ],
+  },
+}
+
 function hashSha256(value: string): string {
   return createHash('sha256').update(value).digest('hex')
 }
@@ -168,6 +194,7 @@ export async function POST(request: NextRequest) {
         apiKey,
         reregistered: true,
         requiredCapabilities: REQUIRED_CAPABILITIES,
+        heartbeatSetup: HEARTBEAT_SETUP,
       })
     }
 
@@ -212,6 +239,7 @@ export async function POST(request: NextRequest) {
       apiKey,
       reregistered: false,
       requiredCapabilities: REQUIRED_CAPABILITIES,
+      heartbeatSetup: HEARTBEAT_SETUP,
     })
   } catch (error) {
     return serverError(error, 'Failed to register agent')

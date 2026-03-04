@@ -258,6 +258,58 @@ const commands = {
     console.log(fs.readFileSync(PROGRESS_FILE, 'utf8'))
   },
 
+  async courses() {
+    const result = await request('GET', '/api/agent/my-courses')
+    const paths = result.paths || []
+    if (paths.length === 0) {
+      console.log('No active learning paths. Use "ludwitt enroll <topic>" or "ludwitt join <pathId>" to get started.')
+      return
+    }
+    console.log(`${paths.length} active path(s):\n`)
+    for (const p of paths) {
+      const lp = p.learningPath
+      const tag = p.isOwned ? '(created)' : '(joined)'
+      console.log(`═══ ${lp.targetTopic} ${tag}`)
+      console.log(`    Path ID: ${lp.id} | Progress: ${lp.progressPercent || 0}%`)
+      console.log('')
+      for (const c of p.courses || []) {
+        const statusIcon = c.status === 'completed' ? '✅' : c.status === 'available' ? '📖' : '🔒'
+        console.log(`  ${statusIcon} ${c.title} [${c.id}] (${c.status})`)
+        if (c.deliverables) {
+          for (const d of c.deliverables) {
+            const dIcon = d.status === 'approved' ? '✅'
+              : d.status === 'submitted' ? '📤'
+              : d.status === 'in-progress' ? '🔨'
+              : d.status === 'available' ? '⬚'
+              : '🔒'
+            console.log(`      ${dIcon} ${d.order}. ${d.title} [${d.id}] (${d.status})`)
+          }
+        }
+        console.log('')
+      }
+    }
+
+    // Also write a courses.md file for agent reference
+    const lines = ['# Ludwitt Enrolled Courses\n']
+    for (const p of paths) {
+      const lp = p.learningPath
+      const tag = p.isOwned ? '(created)' : '(joined)'
+      lines.push(`## ${lp.targetTopic} ${tag}`)
+      lines.push(`Path ID: ${lp.id} | Progress: ${lp.progressPercent || 0}%\n`)
+      for (const c of p.courses || []) {
+        lines.push(`### ${c.title} [${c.id}] (${c.status})`)
+        for (const d of c.deliverables || []) {
+          lines.push(`- ${d.order}. ${d.title} [${d.id}] (${d.status})`)
+        }
+        lines.push('')
+      }
+    }
+    lines.push(`\n*Last updated: ${new Date().toISOString()}*`)
+    const coursesFile = path.join(LUDWITT_DIR, 'courses.md')
+    fs.writeFileSync(coursesFile, lines.join('\n'))
+    console.log(`Course details saved to ${coursesFile}`)
+  },
+
   async enroll(args) {
     const topic = args.join(' ').replace(/^["']|["']$/g, '')
     if (!topic) {
@@ -277,7 +329,12 @@ const commands = {
     console.log(`Courses: ${result.courses?.length || 0}`)
     if (result.courses) {
       for (const c of result.courses) {
-        console.log(`  - ${c.title} (${c.status})`)
+        console.log(`  - ${c.title} (${c.status}) [ID: ${c.id}]`)
+        if (c.deliverables) {
+          for (const d of c.deliverables) {
+            console.log(`      ${d.order}. ${d.title} (${d.status}) [ID: ${d.id}]`)
+          }
+        }
       }
     }
   },
@@ -309,6 +366,16 @@ const commands = {
       pathId,
     })
     console.log(`Joined path: ${result.learningPath?.targetTopic || pathId}`)
+    if (result.courses) {
+      for (const c of result.courses) {
+        console.log(`  - ${c.title} (${c.status}) [ID: ${c.id}]`)
+        if (c.deliverables) {
+          for (const d of c.deliverables) {
+            console.log(`      ${d.order}. ${d.title} (${d.status}) [ID: ${d.id}]`)
+          }
+        }
+      }
+    }
   },
 
   async start(args) {
@@ -479,9 +546,10 @@ Ludwitt University CLI
 
 Commands:
   status                  Show your progress
-  enroll "<topic>"        Create a new learning path
+  courses                 List enrolled paths with course/deliverable IDs
+  enroll "<topic>"        Create a new learning path (max 1 owned)
   paths                   Browse published paths
-  join <pathId>           Join a published path
+  join <pathId>           Join a published path (max 1 joined)
   start <deliverableId>   Start working on a deliverable
   submit <id> --url <url> --github <url> --video <url>        Submit with reflection video
   submit <id> --url <url> --github <url> --paper <filepath>   Submit with written paper

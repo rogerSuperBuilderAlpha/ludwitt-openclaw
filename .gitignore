@@ -146,7 +146,36 @@ src/app/api/verify-local-site/
 src/app/api/verify-vercel/
 src/app/api/voice-notes/
 src/app/api/wallets/
-src/app/api/university/
+# src/app/api/university/ — keep agent-dependent routes, ignore the rest
+src/app/api/university/ai-review/
+src/app/api/university/all-available-slots/
+src/app/api/university/analytics/
+src/app/api/university/announcements/
+src/app/api/university/assistant/
+src/app/api/university/available-slots/
+src/app/api/university/book-slot/
+src/app/api/university/booking-ics/
+src/app/api/university/calendar/
+src/app/api/university/cancel-booking/
+src/app/api/university/contributions/
+src/app/api/university/create-business-idea/
+src/app/api/university/create-thesis-idea/
+src/app/api/university/credentials/
+src/app/api/university/discussions/
+src/app/api/university/exploration/
+src/app/api/university/my-bookings/
+src/app/api/university/my-professors/
+src/app/api/university/path-documents/
+src/app/api/university/portfolio/
+src/app/api/university/professors/
+src/app/api/university/recommendations/
+src/app/api/university/sandbox/
+src/app/api/university/set-deadline/
+src/app/api/university/skills/
+src/app/api/university/study-rooms/
+src/app/api/university/submission-history/
+src/app/api/university/toggle-creator-anonymous/
+src/app/api/university/update-idea/
 src/app/api/zapier/
 
 # --- Unused components ---
@@ -183,23 +212,23 @@ src/components/auth/LoginPage.tsx
 src/lib/achievements/
 src/lib/actions/
 src/lib/admin/
-src/lib/ai/
+# src/lib/ai/ — kept (needed by university agent routes via credits)
 src/lib/alc/
 src/lib/api-keys/
 src/lib/audio/
 src/lib/basics/
 src/lib/cognitive-load/
-src/lib/credits/
+# src/lib/credits/ — kept (needed by university agent routes)
 src/lib/customers/
 src/lib/data/
 src/lib/design/
 src/lib/developers/
 src/lib/features/
 src/lib/hooks/
-src/lib/integrations/
+# src/lib/integrations/ — kept (email sender needed by university notifications)
 src/lib/math-v2/
 src/lib/misconceptions/
-src/lib/morpheus/
+# src/lib/morpheus/ — kept (needed by credits)
 src/lib/personalized-memory/
 src/lib/problem-generation/
 src/lib/pwa/
@@ -213,7 +242,7 @@ src/lib/telemetry/
 src/lib/testing/
 src/lib/timeback/
 src/lib/transfer-learning/
-src/lib/university/
+# src/lib/university/ — kept (needed by university agent routes)
 src/lib/voice-notes/
 src/lib/web3/
 src/lib/sanitize.ts
@@ -250,7 +279,6 @@ src/lib/api/validators.ts
 
 # --- Unused lib/utils files ---
 src/lib/utils/cohortUtils.ts
-src/lib/utils/firestore-helpers.ts
 src/lib/utils/user-api-keys.ts
 src/lib/utils/user-helpers.ts
 

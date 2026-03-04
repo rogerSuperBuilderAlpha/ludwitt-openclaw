@@ -1,30 +1,32 @@
 /**
  * Model Resolver
- * 
+ *
  * Resolves which AI model to use based on user preferences and task requirements.
  * This is the main entry point for API routes to determine which model to use.
  */
 
 import { db } from '@/lib/firebase/admin'
-import { Collections } from '@/lib/basics/collections'
-import { 
-  AIModel, 
-  AITaskType, 
-  ModelTier, 
-  ResolvedModel, 
-  UserAIPreferences 
+import {
+  AIModel,
+  AITaskType,
+  ModelTier,
+  ResolvedModel,
+  UserAIPreferences,
 } from './types'
-import { 
-  getDefaultModelForTier, 
-  getModelById, 
-  getTaskConfig, 
+import {
+  getDefaultModelForTier,
+  getModelById,
+  getTaskConfig,
   getAvailableModels,
-  TASK_CONFIGS 
+  TASK_CONFIGS,
 } from './registry'
 import { logger } from '@/lib/logger'
 
 // Cache for user preferences (TTL: 5 minutes)
-const preferencesCache = new Map<string, { prefs: UserAIPreferences; expiry: number }>()
+const preferencesCache = new Map<
+  string,
+  { prefs: UserAIPreferences; expiry: number }
+>()
 const CACHE_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
 /**
@@ -39,37 +41,42 @@ export const DEFAULT_AI_PREFERENCES: UserAIPreferences = {
 /**
  * Get user's AI preferences from Firestore (with caching)
  */
-export async function getUserAIPreferences(userId: string): Promise<UserAIPreferences> {
+export async function getUserAIPreferences(
+  userId: string
+): Promise<UserAIPreferences> {
   // Check cache first
   const cached = preferencesCache.get(userId)
   if (cached && cached.expiry > Date.now()) {
     return cached.prefs
   }
-  
+
   try {
     if (!db) {
       logger.warn('Modelresolver', 'Firestore not available, using defaults')
       return DEFAULT_AI_PREFERENCES
     }
-    
-    const userDoc = await db.collection(Collections.USERS).doc(userId).get()
-    
+
+    const userDoc = await db.collection('users').doc(userId).get()
+
     if (!userDoc.exists) {
       return DEFAULT_AI_PREFERENCES
     }
-    
+
     const userData = userDoc.data()
-    const prefs: UserAIPreferences = userData?.aiPreferences || DEFAULT_AI_PREFERENCES
-    
+    const prefs: UserAIPreferences =
+      userData?.aiPreferences || DEFAULT_AI_PREFERENCES
+
     // Cache the result
     preferencesCache.set(userId, {
       prefs,
       expiry: Date.now() + CACHE_TTL_MS,
     })
-    
+
     return prefs
   } catch (error) {
-    logger.error('Modelresolver', 'Failed to fetch user preferences', { error: error })
+    logger.error('Modelresolver', 'Failed to fetch user preferences', {
+      error: error,
+    })
     return DEFAULT_AI_PREFERENCES
   }
 }
@@ -78,32 +85,32 @@ export async function getUserAIPreferences(userId: string): Promise<UserAIPrefer
  * Save user's AI preferences to Firestore
  */
 export async function saveUserAIPreferences(
-  userId: string, 
+  userId: string,
   preferences: Partial<UserAIPreferences>
 ): Promise<UserAIPreferences> {
   const currentPrefs = await getUserAIPreferences(userId)
-  
+
   const updatedPrefs: UserAIPreferences = {
     ...currentPrefs,
     ...preferences,
     updatedAt: new Date().toISOString(),
   }
-  
+
   if (!db) {
     throw new Error('Firestore not available')
   }
-  
-  await db.collection(Collections.USERS).doc(userId).set(
-    { aiPreferences: updatedPrefs },
-    { merge: true }
-  )
-  
+
+  await db
+    .collection('users')
+    .doc(userId)
+    .set({ aiPreferences: updatedPrefs }, { merge: true })
+
   // Update cache
   preferencesCache.set(userId, {
     prefs: updatedPrefs,
     expiry: Date.now() + CACHE_TTL_MS,
   })
-  
+
   return updatedPrefs
 }
 
@@ -116,7 +123,7 @@ export function clearPreferencesCache(userId: string): void {
 
 /**
  * Resolve which model to use for a specific user and task
- * 
+ *
  * Resolution order:
  * 1. User's task-specific preference (if set)
  * 2. User's specific model preference (if set)
@@ -128,7 +135,7 @@ export async function resolveModelForUser(
   taskType: AITaskType
 ): Promise<ResolvedModel> {
   const taskConfig = getTaskConfig(taskType)
-  
+
   // If no user ID, use task's recommended tier
   if (!userId) {
     return {
@@ -136,14 +143,17 @@ export async function resolveModelForUser(
       reason: 'task-default',
     }
   }
-  
+
   try {
     const prefs = await getUserAIPreferences(userId)
-    
+
     // Check for task-specific preference
-    if (prefs.taskPreferences?.[taskType as keyof typeof prefs.taskPreferences]) {
-      const taskPref = prefs.taskPreferences[taskType as keyof typeof prefs.taskPreferences]
-      
+    if (
+      prefs.taskPreferences?.[taskType as keyof typeof prefs.taskPreferences]
+    ) {
+      const taskPref =
+        prefs.taskPreferences[taskType as keyof typeof prefs.taskPreferences]
+
       // If it's a model ID, use that specific model
       if (typeof taskPref === 'string' && taskPref.includes('-')) {
         const specificModel = getModelById(taskPref)
@@ -154,7 +164,7 @@ export async function resolveModelForUser(
           }
         }
       }
-      
+
       // If it's a tier, use that tier
       if (['economy', 'standard', 'premium'].includes(taskPref as string)) {
         return {
@@ -163,7 +173,7 @@ export async function resolveModelForUser(
         }
       }
     }
-    
+
     // Check for specific model preference
     if (prefs.preferredModelId) {
       const specificModel = getModelById(prefs.preferredModelId)
@@ -174,7 +184,7 @@ export async function resolveModelForUser(
         }
       }
     }
-    
+
     // Use user's tier preference
     if (prefs.preferredTier) {
       return {
@@ -182,7 +192,7 @@ export async function resolveModelForUser(
         reason: 'user-preference',
       }
     }
-    
+
     // Fallback to task's recommended tier
     return {
       model: getDefaultModelForTier(taskConfig.recommendedTier),
@@ -222,13 +232,13 @@ export function getModelDisplayInfo(modelId: string): {
 } | null {
   const model = getModelById(modelId)
   if (!model) return null
-  
+
   // Estimate cost for a typical request (500 input, 500 output tokens)
-  const estimatedCost = (
-    (500 / 1_000_000) * model.pricing.inputPerMillion +
-    (500 / 1_000_000) * model.pricing.outputPerMillion
-  ) * 100 // Convert to cents
-  
+  const estimatedCost =
+    ((500 / 1_000_000) * model.pricing.inputPerMillion +
+      (500 / 1_000_000) * model.pricing.outputPerMillion) *
+    100 // Convert to cents
+
   return {
     name: model.name,
     tier: model.tier,
@@ -248,15 +258,15 @@ export function compareTierCosts(): {
   description: string
 }[] {
   const tiers: ModelTier[] = ['economy', 'standard', 'premium']
-  
-  return tiers.map(tier => {
+
+  return tiers.map((tier) => {
     const model = getDefaultModelForTier(tier)
     // Typical request: 500 input, 500 output tokens
-    const cost = (
-      (500 / 1_000_000) * model.pricing.inputPerMillion +
-      (500 / 1_000_000) * model.pricing.outputPerMillion
-    ) * 100 // cents
-    
+    const cost =
+      ((500 / 1_000_000) * model.pricing.inputPerMillion +
+        (500 / 1_000_000) * model.pricing.outputPerMillion) *
+      100 // cents
+
     return {
       tier,
       model: model.name,
@@ -265,4 +275,3 @@ export function compareTierCosts(): {
     }
   })
 }
-

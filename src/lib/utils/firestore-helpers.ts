@@ -1,18 +1,29 @@
 /**
  * Firestore Helper Utilities
- * 
+ *
  * Common Firestore operations and helpers
  */
 
 import { db } from '@/lib/firebase/admin'
-import { Timestamp, DocumentSnapshot, DocumentReference } from 'firebase-admin/firestore'
-import { Collections } from '@/lib/basics/collections'
+import {
+  Timestamp,
+  DocumentSnapshot,
+  DocumentReference,
+} from 'firebase-admin/firestore'
+
+const COLLECTIONS = {
+  USER_BASICS_PROGRESS: 'userBasicsProgress',
+  BASICS_ENGAGEMENT: 'basicsEngagement',
+  USERS: 'users',
+} as const
 
 /**
  * Get user progress document
  */
-export async function getUserProgressDoc(userId: string): Promise<DocumentSnapshot> {
-  return await db.collection(Collections.USER_BASICS_PROGRESS).doc(userId).get()
+export async function getUserProgressDoc(
+  userId: string
+): Promise<DocumentSnapshot> {
+  return await db.collection(COLLECTIONS.USER_BASICS_PROGRESS).doc(userId).get()
 }
 
 /**
@@ -30,9 +41,12 @@ export async function getUserProgressData(userId: string): Promise<any | null> {
 /**
  * Get daily engagement document reference
  */
-export function getDailyEngagementRef(userId: string, date: string): DocumentReference {
+export function getDailyEngagementRef(
+  userId: string,
+  date: string
+): DocumentReference {
   return db
-    .collection(Collections.BASICS_ENGAGEMENT)
+    .collection(COLLECTIONS.BASICS_ENGAGEMENT)
     .doc(userId)
     .collection('daily')
     .doc(date)
@@ -49,7 +63,7 @@ export async function getOrCreateDailyEngagement(
 ): Promise<DocumentSnapshot> {
   const docRef = getDailyEngagementRef(userId, date)
   const doc = await docRef.get()
-  
+
   if (!doc.exists && initialData) {
     await docRef.set({
       date,
@@ -59,11 +73,11 @@ export async function getOrCreateDailyEngagement(
       totalTimeActive: 0,
       createdAt: createTimestamp(),
       updatedAt: createTimestamp(),
-      ...initialData
+      ...initialData,
     })
     return await docRef.get()
   }
-  
+
   return doc
 }
 
@@ -91,15 +105,21 @@ export function createDate(): Date {
 /**
  * Convert Firestore timestamp to Date
  */
-export function toDate(timestamp: Timestamp | Date | string | number | null | undefined): Date | undefined {
+export function toDate(
+  timestamp: Timestamp | Date | string | number | null | undefined
+): Date | undefined {
   if (!timestamp) return undefined
   if (timestamp instanceof Date) return timestamp
-  
+
   // Handle Firestore Timestamp objects (they have a toDate method)
-  if (typeof timestamp === 'object' && 'toDate' in timestamp && typeof timestamp.toDate === 'function') {
+  if (
+    typeof timestamp === 'object' &&
+    'toDate' in timestamp &&
+    typeof timestamp.toDate === 'function'
+  ) {
     return timestamp.toDate()
   }
-  
+
   // Handle string or number timestamps
   const date = new Date(timestamp as string | number)
   return isNaN(date.getTime()) ? undefined : date
@@ -108,7 +128,9 @@ export function toDate(timestamp: Timestamp | Date | string | number | null | un
 /**
  * Convert Date to Firestore timestamp
  */
-export function toFirestoreTimestamp(date: Date | null | undefined): Timestamp | undefined {
+export function toFirestoreTimestamp(
+  date: Date | null | undefined
+): Timestamp | undefined {
   if (!date) return undefined
   const { Timestamp } = require('firebase-admin/firestore')
   return Timestamp.fromDate(date)
@@ -118,19 +140,25 @@ export function toFirestoreTimestamp(date: Date | null | undefined): Timestamp |
  * Batch fetch user profiles efficiently
  * Fetches in batches of 10 to avoid Firestore limits
  */
-export async function batchFetchUserProfiles(userIds: string[]): Promise<Map<string, any>> {
+export async function batchFetchUserProfiles(
+  userIds: string[]
+): Promise<Map<string, any>> {
   const profileMap = new Map<string, any>()
-  
+
   // Process in batches of 10
   for (let i = 0; i < userIds.length; i += 10) {
     const batch = userIds.slice(i, i + 10)
-    const profilePromises = batch.map(userId =>
-      db.collection(Collections.USERS).doc(userId).get().then(doc => ({
-        userId,
-        data: doc.exists ? doc.data() : null
-      }))
+    const profilePromises = batch.map((userId) =>
+      db
+        .collection(COLLECTIONS.USERS)
+        .doc(userId)
+        .get()
+        .then((doc) => ({
+          userId,
+          data: doc.exists ? doc.data() : null,
+        }))
     )
-    
+
     const profiles = await Promise.all(profilePromises)
     profiles.forEach(({ userId, data }) => {
       if (data) {
@@ -138,6 +166,6 @@ export async function batchFetchUserProfiles(userIds: string[]): Promise<Map<str
       }
     })
   }
-  
+
   return profileMap
 }

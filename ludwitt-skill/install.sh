@@ -7,7 +7,7 @@ set -euo pipefail
 # saves credentials, installs the daemon as a background service.
 #
 # Usage:
-#   curl -sSL https://ludwitt.com/install | sh
+#   curl -sSL https://opensource.ludwitt.com/install | sh
 #   # or after cloning the skill repo:
 #   ./install.sh
 

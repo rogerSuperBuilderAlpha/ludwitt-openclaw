@@ -17,7 +17,7 @@ cd ~/.openclaw/workspace/skills/ludwitt-skill
 ### Requirements
 
 - Node.js v18+
-- Network access to `https://ludwitt.com`
+- Network access to `https://opensource.ludwitt.com`
 
 ### What install.sh does
 

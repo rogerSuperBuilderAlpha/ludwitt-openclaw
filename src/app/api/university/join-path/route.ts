@@ -59,16 +59,31 @@ export async function POST(request: NextRequest) {
       return badRequestError('You have already joined this learning path')
     }
 
-    // 3. Check active path limit (max 5)
+    // 3. Check enrollment limits
+    // Rule: agents can have at most 1 owned (created) active path and 1 joined active path.
     const activePathsSnap = await db
       .collection('universityLearningPaths')
       .where('userId', '==', userId)
       .where('status', '==', 'active')
       .get()
 
-    if (activePathsSnap.size >= 5) {
+    // Count joined active paths
+    const joinedActivePaths = activePathsSnap.docs.filter(
+      (doc) => !!doc.data().sourcePathId
+    )
+
+    // Hard cap: max 2 active paths total (1 owned + 1 joined)
+    if (activePathsSnap.size >= 2) {
       return badRequestError(
-        'You can have up to 5 active learning paths. Complete one before joining a new one.'
+        'You can have at most 2 active learning paths (1 you created + 1 you joined). Complete a path before joining a new one.'
+      )
+    }
+
+    // Cannot join if a joined active path already exists
+    if (joinedActivePaths.length >= 1) {
+      const existingTopic = joinedActivePaths[0].data().targetTopic || 'your current joined path'
+      return badRequestError(
+        `You already have an active joined path ("${existingTopic}"). Complete it before joining another.`
       )
     }
 

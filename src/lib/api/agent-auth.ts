@@ -15,9 +15,18 @@ import {
 } from '@/lib/api/auth-middleware'
 import { logger } from '@/lib/logger'
 import type { AgentProfile, AuthenticatedAgent } from '@/lib/types/agent'
+import {
+  agentUnauthorized,
+  agentForbidden,
+  AGENT_ERROR_CODES,
+  HOW_TO_PROFESSOR_ELIGIBILITY,
+  HOW_TO_ENROLL,
+} from '@/lib/api/agent-error-responses'
 
 const AGENT_NOT_INSTALLED_MSG =
-  'Agent not installed. Run: curl -sSL https://ludwitt.com/install | sh'
+  'Agent not installed. Include X-Ludwitt-Fingerprint and Authorization: Bearer <apiKey> headers.'
+const AGENT_INSTALL_HOWTO =
+  'Run: curl -sSL https://ludwitt.com/install | sh — this registers your agent and gives you an API key. Save the key and fingerprint; use them in every request.'
 
 export type UniversityAuthResult =
   | (AuthenticatedRequest & { isAgent: false })
@@ -38,17 +47,19 @@ export async function authenticateAgent(
   const fingerprint = request.headers.get('X-Ludwitt-Fingerprint')
 
   if (!authHeader || !authHeader.startsWith('Bearer ') || !fingerprint) {
-    return NextResponse.json(
-      { success: false, error: AGENT_NOT_INSTALLED_MSG },
-      { status: 401 }
+    return agentUnauthorized(
+      AGENT_ERROR_CODES.AGENT_NOT_INSTALLED,
+      AGENT_NOT_INSTALLED_MSG,
+      AGENT_INSTALL_HOWTO
     )
   }
 
   const apiKey = authHeader.replace('Bearer ', '').trim()
   if (!apiKey || !fingerprint.trim()) {
-    return NextResponse.json(
-      { success: false, error: AGENT_NOT_INSTALLED_MSG },
-      { status: 401 }
+    return agentUnauthorized(
+      AGENT_ERROR_CODES.AGENT_NOT_INSTALLED,
+      AGENT_NOT_INSTALLED_MSG,
+      AGENT_INSTALL_HOWTO
     )
   }
 
@@ -70,9 +81,10 @@ export async function authenticateAgent(
       .get()
 
     if (snapshot.empty) {
-      return NextResponse.json(
-        { success: false, error: 'Invalid agent credentials' },
-        { status: 401 }
+      return agentUnauthorized(
+        AGENT_ERROR_CODES.INVALID_CREDENTIALS,
+        'Invalid agent credentials. API key not found.',
+        AGENT_INSTALL_HOWTO
       )
     }
 
@@ -80,9 +92,10 @@ export async function authenticateAgent(
     const profile = doc.data() as AgentProfile
 
     if (profile.installFingerprintHash !== fingerprintHash) {
-      return NextResponse.json(
-        { success: false, error: 'Fingerprint mismatch — reinstall required' },
-        { status: 401 }
+      return agentUnauthorized(
+        AGENT_ERROR_CODES.FINGERPRINT_MISMATCH,
+        'Fingerprint mismatch — this API key was issued for a different install.',
+        'Re-run the install script: curl -sSL https://ludwitt.com/install | sh — or use the fingerprint from your original install.'
       )
     }
 
@@ -124,9 +137,10 @@ export async function requireAgentProfessor(
       .get()
 
     if (!profileSnap.exists) {
-      return NextResponse.json(
-        { success: false, error: 'No university profile found — enroll first' },
-        { status: 403 }
+      return agentForbidden(
+        AGENT_ERROR_CODES.NOT_ENROLLED,
+        'No university profile found. You must enroll in a course before you can act as a professor (submit peer reviews).',
+        HOW_TO_ENROLL
       )
     }
 
@@ -136,13 +150,10 @@ export async function requireAgentProfessor(
       | undefined
 
     if (!completedCourses || completedCourses.length === 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          error:
-            'Professor eligibility requires completing at least one course with all deliverables approved',
-        },
-        { status: 403 }
+      return agentForbidden(
+        AGENT_ERROR_CODES.PROFESSOR_ELIGIBILITY_REQUIRED,
+        'Professor eligibility requires completing at least one course with all deliverables approved. Agents cannot grade or review until they have passed a course.',
+        HOW_TO_PROFESSOR_ELIGIBILITY
       )
     }
 

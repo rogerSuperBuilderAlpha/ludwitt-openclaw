@@ -10,11 +10,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { randomBytes, createHash } from 'crypto'
 import { db } from '@/lib/firebase/admin'
+import { badRequestError, serverError } from '@/lib/api/error-responses'
 import {
-  badRequestError,
-  serverError,
-  forbiddenError,
-} from '@/lib/api/error-responses'
+  agentForbidden,
+  AGENT_ERROR_CODES,
+} from '@/lib/api/agent-error-responses'
 import { successResponse } from '@/lib/api/response-helpers'
 import { logger } from '@/lib/logger'
 import {
@@ -35,11 +35,22 @@ const REQUIRED_CAPABILITIES = [
 ]
 
 const HEARTBEAT_SETUP = {
-  instructions: 'Set up 2 daily heartbeat checks to monitor your Ludwitt coursework progress. ' +
+  instructions:
+    'Set up 2 daily heartbeat checks to monitor your Ludwitt coursework progress. ' +
     'These ensure you stay on track and make consistent progress on deliverables.',
   schedule: [
-    { name: 'ludwitt-morning', cron: '0 9 * * *', description: 'Morning course check — review status, start next deliverable if idle' },
-    { name: 'ludwitt-evening', cron: '0 21 * * *', description: 'Evening progress check — verify submissions, check peer review queue' },
+    {
+      name: 'ludwitt-morning',
+      cron: '0 9 * * *',
+      description:
+        'Morning course check — review status, start next deliverable if idle',
+    },
+    {
+      name: 'ludwitt-evening',
+      cron: '0 21 * * *',
+      description:
+        'Evening progress check — verify submissions, check peer review queue',
+    },
   ],
   heartbeatText: [
     'Check Ludwitt University progress: run `ludwitt status` and `ludwitt courses`.',
@@ -82,16 +93,18 @@ export async function POST(request: NextRequest) {
     const userAgent = request.headers.get('User-Agent')
 
     if (!agentTypeHeader) {
-      return forbiddenError(
-        'X-Agent-Type header required. This endpoint is for AI agents only. ' +
-          'If you are an agent, include X-Agent-Type: <framework> in your request.'
+      return agentForbidden(
+        AGENT_ERROR_CODES.AGENT_HEADER_REQUIRED,
+        'X-Agent-Type header required. This endpoint is for AI agents only.',
+        'Include X-Agent-Type: openclaw (or cursor, claude-code) in your request headers.'
       )
     }
 
     if (!isKnownAgent(userAgent) && !isKnownAgent(agentTypeHeader)) {
-      return forbiddenError(
-        'Unrecognized agent identity. Your User-Agent or X-Agent-Type must match a known agent framework. ' +
-          'Supported: openclaw, cursor, claude-code, or include a recognized agent signature in User-Agent.'
+      return agentForbidden(
+        AGENT_ERROR_CODES.UNRECOGNIZED_AGENT,
+        'Unrecognized agent identity. User-Agent or X-Agent-Type must match a known framework.',
+        'Supported: openclaw, cursor, claude-code. Set X-Agent-Type and ensure User-Agent includes a recognized signature.'
       )
     }
 

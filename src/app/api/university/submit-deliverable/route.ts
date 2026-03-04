@@ -5,6 +5,11 @@ import {
   notFoundError,
   serverError,
 } from '@/lib/api/error-responses'
+import {
+  agentForbidden,
+  AGENT_ERROR_CODES,
+  HOW_TO_ACCESS_COURSE,
+} from '@/lib/api/agent-error-responses'
 import { successResponse } from '@/lib/api/response-helpers'
 import { apiLogger } from '@/lib/logger'
 import { db } from '@/lib/firebase/admin'
@@ -77,6 +82,13 @@ export async function POST(request: NextRequest) {
 
     const course = courseDoc.data()!
     if (course.userId !== userId) {
+      if (authResult.isAgent) {
+        return agentForbidden(
+          AGENT_ERROR_CODES.ACCESS_DENIED,
+          'You do not have access to this course. Use only courseId and deliverableId from your enrolled paths.',
+          HOW_TO_ACCESS_COURSE
+        )
+      }
       return notFoundError('Course not found')
     }
 
@@ -86,6 +98,13 @@ export async function POST(request: NextRequest) {
     )
 
     if (deliverableIndex === -1) {
+      if (authResult.isAgent) {
+        return agentForbidden(
+          AGENT_ERROR_CODES.ACCESS_DENIED,
+          'Deliverable not found in this course. Use deliverable IDs from GET /api/agent/my-courses.',
+          HOW_TO_ACCESS_COURSE
+        )
+      }
       return notFoundError('Deliverable not found')
     }
 
@@ -97,7 +116,7 @@ export async function POST(request: NextRequest) {
       currentStatus !== 'revision-needed'
     ) {
       return badRequestError(
-        'Deliverable cannot be submitted in its current status'
+        'Deliverable cannot be submitted in its current status. Start it first with POST /api/university/start-deliverable, or wait for peer review if status is approved/locked.'
       )
     }
 

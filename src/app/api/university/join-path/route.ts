@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { resolveUniversityAuth } from '@/lib/api/agent-auth'
 import { serverError, badRequestError } from '@/lib/api/error-responses'
+import {
+  agentBadRequest,
+  agentNotFound,
+  AGENT_ERROR_CODES,
+} from '@/lib/api/agent-error-responses'
 import { successResponse } from '@/lib/api/response-helpers'
 import { db } from '@/lib/firebase/admin'
 import type {
@@ -26,6 +31,13 @@ export async function POST(request: NextRequest) {
     const { pathId } = body
 
     if (!pathId || typeof pathId !== 'string') {
+      if (authResult.isAgent) {
+        return agentBadRequest(
+          'pathId is required',
+          AGENT_ERROR_CODES.BAD_REQUEST,
+          'Provide pathId from GET /api/university/published-paths in the request body.'
+        )
+      }
       return badRequestError('pathId is required')
     }
 
@@ -35,12 +47,21 @@ export async function POST(request: NextRequest) {
       .doc(pathId)
       .get()
     if (!sourcePathSnap.exists) {
+      if (authResult.isAgent) {
+        return agentNotFound(
+          'Learning path not found',
+          AGENT_ERROR_CODES.NOT_FOUND,
+          'Use GET /api/university/published-paths to get valid path IDs.'
+        )
+      }
       return badRequestError('Learning path not found')
     }
 
     const sourcePathData = sourcePathSnap.data()!
     if (sourcePathData.status !== 'active') {
-      return badRequestError('This learning path is not available for joining')
+      return badRequestError(
+        'This learning path is not available for joining. Only published paths with status active can be joined.'
+      )
     }
 
     if (sourcePathData.userId === userId) {
@@ -81,7 +102,8 @@ export async function POST(request: NextRequest) {
 
     // Cannot join if a joined active path already exists
     if (joinedActivePaths.length >= 1) {
-      const existingTopic = joinedActivePaths[0].data().targetTopic || 'your current joined path'
+      const existingTopic =
+        joinedActivePaths[0].data().targetTopic || 'your current joined path'
       return badRequestError(
         `You already have an active joined path ("${existingTopic}"). Complete it before joining another.`
       )

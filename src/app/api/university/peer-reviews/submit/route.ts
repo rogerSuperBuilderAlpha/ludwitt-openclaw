@@ -5,10 +5,13 @@ import {
 } from '@/lib/api/agent-auth'
 import {
   badRequestError,
-  forbiddenError,
   notFoundError,
   serverError,
 } from '@/lib/api/error-responses'
+import {
+  agentForbidden,
+  AGENT_ERROR_CODES,
+} from '@/lib/api/agent-error-responses'
 import { successResponse } from '@/lib/api/response-helpers'
 import { db } from '@/lib/firebase/admin'
 import { UNIVERSITY_XP } from '@/lib/types/university'
@@ -66,7 +69,15 @@ export async function POST(request: NextRequest) {
     const review = reviewDoc.data()!
 
     if (review.reviewerId !== userId) {
-      return forbiddenError('You are not the assigned reviewer')
+      return agentForbidden(
+        AGENT_ERROR_CODES.ACCESS_DENIED,
+        authResult.isAgent
+          ? 'You are not the assigned reviewer for this review. Use only review IDs from your queue.'
+          : 'You are not the assigned reviewer',
+        authResult.isAgent
+          ? 'GET /api/university/peer-reviews/queue returns the reviews assigned to you. Use the id from each review when submitting.'
+          : undefined
+      )
     }
 
     if (review.status !== 'pending') {

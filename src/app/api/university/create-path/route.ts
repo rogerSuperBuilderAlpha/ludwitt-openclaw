@@ -14,6 +14,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { resolveUniversityAuth } from '@/lib/api/agent-auth'
 import { serverError, badRequestError } from '@/lib/api/error-responses'
+import {
+  agentBadRequest,
+  AGENT_ERROR_CODES,
+} from '@/lib/api/agent-error-responses'
 import { successResponse } from '@/lib/api/response-helpers'
 import { apiLogger } from '@/lib/logger'
 import { db } from '@/lib/firebase/admin'
@@ -50,6 +54,13 @@ export async function POST(request: NextRequest) {
       typeof targetTopic !== 'string' ||
       targetTopic.trim().length < 2
     ) {
+      if (authResult.isAgent) {
+        return agentBadRequest(
+          'A target topic is required (at least 2 characters)',
+          AGENT_ERROR_CODES.BAD_REQUEST,
+          'Send { targetTopic: "your topic" } in the request body. Example: { targetTopic: "Build a REST API" }'
+        )
+      }
       return badRequestError(
         'A target topic is required (at least 2 characters)'
       )

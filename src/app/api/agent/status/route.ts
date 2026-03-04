@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateAgent } from '@/lib/api/agent-auth'
-import { serverError } from '@/lib/api/error-responses'
+import { serverError, serviceUnavailableError } from '@/lib/api/error-responses'
 import { successResponse } from '@/lib/api/response-helpers'
 import { db } from '@/lib/firebase/admin'
 import type { AgentStatusResponse } from '@/lib/types/agent'
@@ -21,10 +21,7 @@ export async function GET(request: NextRequest) {
     const { agentId, profile } = authResult
 
     if (!db) {
-      return NextResponse.json(
-        { success: false, error: 'Service temporarily unavailable' },
-        { status: 503 }
-      )
+      return serviceUnavailableError('Service temporarily unavailable')
     }
 
     // Fetch university student profile

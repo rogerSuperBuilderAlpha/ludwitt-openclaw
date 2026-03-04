@@ -8,6 +8,7 @@
  */
 
 import { NextResponse } from 'next/server'
+import { LUDWITT_API_VERSION, UPDATE_INSTRUCTIONS } from '@/config/agent-api'
 
 export const AGENT_ERROR_CODES = {
   AGENT_NOT_INSTALLED: 'AGENT_NOT_INSTALLED',
@@ -27,6 +28,8 @@ export type AgentErrorPayload = {
   error: string
   errorCode: string
   howToAccess?: string
+  apiVersion: string
+  updateInstructions: string
 }
 
 function agentError(
@@ -40,6 +43,8 @@ function agentError(
     error,
     errorCode,
     ...(howToAccess && { howToAccess }),
+    apiVersion: LUDWITT_API_VERSION,
+    updateInstructions: UPDATE_INSTRUCTIONS,
   }
   return NextResponse.json(payload, { status })
 }

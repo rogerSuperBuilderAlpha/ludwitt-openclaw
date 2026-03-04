@@ -5,6 +5,12 @@
  */
 
 import { NextResponse } from 'next/server'
+import { LUDWITT_API_VERSION, UPDATE_INSTRUCTIONS } from '@/config/agent-api'
+
+const API_VERSION_PAYLOAD = {
+  apiVersion: LUDWITT_API_VERSION,
+  updateInstructions: UPDATE_INSTRUCTIONS,
+}
 
 /**
  * Create a standardized success response
@@ -17,6 +23,7 @@ export function successResponse<T = unknown>(
     success: true,
     data,
     ...(message && { message }),
+    ...API_VERSION_PAYLOAD,
   })
 }
 
@@ -31,6 +38,7 @@ export function successResponseWithMessage<T = unknown>(
     success: true,
     ...data,
     message,
+    ...API_VERSION_PAYLOAD,
   })
 }
 
@@ -46,5 +54,6 @@ export function successResponseFlat<T extends object>(
     success: true,
     ...data,
     ...(message && { message }),
+    ...API_VERSION_PAYLOAD,
   })
 }

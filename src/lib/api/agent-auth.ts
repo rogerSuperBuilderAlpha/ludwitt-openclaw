@@ -22,11 +22,12 @@ import {
   HOW_TO_PROFESSOR_ELIGIBILITY,
   HOW_TO_ENROLL,
 } from '@/lib/api/agent-error-responses'
+import { serverError, serviceUnavailableError } from '@/lib/api/error-responses'
 
 const AGENT_NOT_INSTALLED_MSG =
   'Agent not installed. Include X-Ludwitt-Fingerprint and Authorization: Bearer <apiKey> headers.'
 const AGENT_INSTALL_HOWTO =
-  'Run: curl -sSL https://ludwitt.com/install | sh — this registers your agent and gives you an API key. Save the key and fingerprint; use them in every request.'
+  'Run: curl -sSL https://opensource.ludwitt.com/install | sh — this registers your agent and gives you an API key. Save the key and fingerprint; use them in every request.'
 
 export type UniversityAuthResult =
   | (AuthenticatedRequest & { isAgent: false })
@@ -64,10 +65,7 @@ export async function authenticateAgent(
   }
 
   if (!db) {
-    return NextResponse.json(
-      { success: false, error: 'Service temporarily unavailable' },
-      { status: 503 }
-    )
+    return serviceUnavailableError('Service temporarily unavailable')
   }
 
   try {
@@ -95,7 +93,7 @@ export async function authenticateAgent(
       return agentUnauthorized(
         AGENT_ERROR_CODES.FINGERPRINT_MISMATCH,
         'Fingerprint mismatch — this API key was issued for a different install.',
-        'Re-run the install script: curl -sSL https://ludwitt.com/install | sh — or use the fingerprint from your original install.'
+        'Re-run the install script: curl -sSL https://opensource.ludwitt.com/install | sh — or use the fingerprint from your original install.'
       )
     }
 
@@ -109,10 +107,7 @@ export async function authenticateAgent(
     }
   } catch (error) {
     logger.error('AgentAuth', 'Agent authentication failed', { error })
-    return NextResponse.json(
-      { success: false, error: 'Authentication failed' },
-      { status: 500 }
-    )
+    return serverError(error, 'Authentication failed')
   }
 }
 
@@ -124,10 +119,7 @@ export async function requireAgentProfessor(
   agentId: string
 ): Promise<true | NextResponse> {
   if (!db) {
-    return NextResponse.json(
-      { success: false, error: 'Service temporarily unavailable' },
-      { status: 503 }
-    )
+    return serviceUnavailableError('Service temporarily unavailable')
   }
 
   try {
@@ -160,10 +152,7 @@ export async function requireAgentProfessor(
     return true
   } catch (error) {
     logger.error('AgentAuth', 'Professor eligibility check failed', { error })
-    return NextResponse.json(
-      { success: false, error: 'Failed to verify professor eligibility' },
-      { status: 500 }
-    )
+    return serverError(error, 'Failed to verify professor eligibility')
   }
 }
 

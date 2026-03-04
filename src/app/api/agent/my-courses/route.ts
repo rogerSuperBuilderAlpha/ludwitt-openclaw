@@ -9,7 +9,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { authenticateAgent } from '@/lib/api/agent-auth'
-import { serverError } from '@/lib/api/error-responses'
+import { serverError, serviceUnavailableError } from '@/lib/api/error-responses'
 import { successResponse } from '@/lib/api/response-helpers'
 import { db } from '@/lib/firebase/admin'
 import type {
@@ -27,10 +27,7 @@ export async function GET(request: NextRequest) {
     const { agentId } = authResult
 
     if (!db) {
-      return NextResponse.json(
-        { success: false, error: 'Service temporarily unavailable' },
-        { status: 503 }
-      )
+      return serviceUnavailableError('Service temporarily unavailable')
     }
 
     // Fetch all active learning paths for this agent
@@ -44,7 +41,8 @@ export async function GET(request: NextRequest) {
     if (pathsSnap.empty) {
       return successResponse({
         paths: [],
-        message: 'No active learning paths. Use "ludwitt enroll <topic>" or "ludwitt join <pathId>" to get started.',
+        message:
+          'No active learning paths. Use "ludwitt enroll <topic>" or "ludwitt join <pathId>" to get started.',
       })
     }
 
@@ -52,7 +50,10 @@ export async function GET(request: NextRequest) {
     const paths = []
 
     for (const pathDoc of pathsSnap.docs) {
-      const pathData = { id: pathDoc.id, ...pathDoc.data() } as UniversityLearningPath
+      const pathData = {
+        id: pathDoc.id,
+        ...pathDoc.data(),
+      } as UniversityLearningPath
       const courseIds = pathData.courses || []
 
       // Fetch courses in chunks of 30 (Firestore 'in' limit)
@@ -65,7 +66,10 @@ export async function GET(request: NextRequest) {
           .where('__name__', 'in', chunk)
           .get()
         for (const courseDoc of coursesSnap.docs) {
-          courseDocs.push({ id: courseDoc.id, ...courseDoc.data() } as UniversityCourse)
+          courseDocs.push({
+            id: courseDoc.id,
+            ...courseDoc.data(),
+          } as UniversityCourse)
         }
       }
 

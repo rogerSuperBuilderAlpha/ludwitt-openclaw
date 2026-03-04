@@ -29,6 +29,21 @@ const MAX_REQUEST_RETRIES = parseInt(
   10
 )
 
+let updateCheckShown = false
+
+function checkUpdateAvailable(result) {
+  if (updateCheckShown || !result?.apiVersion) return
+  try {
+    const auth = JSON.parse(fs.readFileSync(AUTH_FILE, 'utf8'))
+    const clientVersion = auth.clientVersion
+    if (!clientVersion || clientVersion === result.apiVersion) return
+    updateCheckShown = true
+    console.error(
+      `[ludwitt] A new API version is available (server: ${result.apiVersion}, yours: ${clientVersion}). Update: ${result.updateInstructions || 'curl -sSL https://opensource.ludwitt.com/install | sh'}`
+    )
+  } catch {}
+}
+
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 function loadAuth() {
@@ -126,7 +141,14 @@ function requestOnce(method, endpoint, body, redirectCount = 0) {
               err.retryable = res.statusCode >= 500 || res.statusCode === 429
               finish(reject, err)
             } else {
-              finish(resolve, parsed.data || parsed)
+              const payload = parsed.data || parsed
+              if (parsed.apiVersion) {
+                Object.assign(payload, {
+                  apiVersion: parsed.apiVersion,
+                  updateInstructions: parsed.updateInstructions,
+                })
+              }
+              finish(resolve, payload)
             }
           } catch {
             if (res.statusCode >= 400) {
@@ -166,7 +188,9 @@ async function request(method, endpoint, body) {
 
   while (attempt <= MAX_REQUEST_RETRIES) {
     try {
-      return await requestOnce(method, endpoint, body)
+      const result = await requestOnce(method, endpoint, body)
+      checkUpdateAvailable(result)
+      return result
     } catch (err) {
       lastError = err
       if (attempt >= MAX_REQUEST_RETRIES || !isRetryableError(err)) {
@@ -262,7 +286,9 @@ const commands = {
     const result = await request('GET', '/api/agent/my-courses')
     const paths = result.paths || []
     if (paths.length === 0) {
-      console.log('No active learning paths. Use "ludwitt enroll <topic>" or "ludwitt join <pathId>" to get started.')
+      console.log(
+        'No active learning paths. Use "ludwitt enroll <topic>" or "ludwitt join <pathId>" to get started.'
+      )
       return
     }
     console.log(`${paths.length} active path(s):\n`)
@@ -270,19 +296,33 @@ const commands = {
       const lp = p.learningPath
       const tag = p.isOwned ? '(created)' : '(joined)'
       console.log(`═══ ${lp.targetTopic} ${tag}`)
-      console.log(`    Path ID: ${lp.id} | Progress: ${lp.progressPercent || 0}%`)
+      console.log(
+        `    Path ID: ${lp.id} | Progress: ${lp.progressPercent || 0}%`
+      )
       console.log('')
       for (const c of p.courses || []) {
-        const statusIcon = c.status === 'completed' ? '✅' : c.status === 'available' ? '📖' : '🔒'
+        const statusIcon =
+          c.status === 'completed'
+            ? '✅'
+            : c.status === 'available'
+              ? '📖'
+              : '🔒'
         console.log(`  ${statusIcon} ${c.title} [${c.id}] (${c.status})`)
         if (c.deliverables) {
           for (const d of c.deliverables) {
-            const dIcon = d.status === 'approved' ? '✅'
-              : d.status === 'submitted' ? '📤'
-              : d.status === 'in-progress' ? '🔨'
-              : d.status === 'available' ? '⬚'
-              : '🔒'
-            console.log(`      ${dIcon} ${d.order}. ${d.title} [${d.id}] (${d.status})`)
+            const dIcon =
+              d.status === 'approved'
+                ? '✅'
+                : d.status === 'submitted'
+                  ? '📤'
+                  : d.status === 'in-progress'
+                    ? '🔨'
+                    : d.status === 'available'
+                      ? '⬚'
+                      : '🔒'
+            console.log(
+              `      ${dIcon} ${d.order}. ${d.title} [${d.id}] (${d.status})`
+            )
           }
         }
         console.log('')
@@ -332,7 +372,9 @@ const commands = {
         console.log(`  - ${c.title} (${c.status}) [ID: ${c.id}]`)
         if (c.deliverables) {
           for (const d of c.deliverables) {
-            console.log(`      ${d.order}. ${d.title} (${d.status}) [ID: ${d.id}]`)
+            console.log(
+              `      ${d.order}. ${d.title} (${d.status}) [ID: ${d.id}]`
+            )
           }
         }
       }
@@ -371,7 +413,9 @@ const commands = {
         console.log(`  - ${c.title} (${c.status}) [ID: ${c.id}]`)
         if (c.deliverables) {
           for (const d of c.deliverables) {
-            console.log(`      ${d.order}. ${d.title} (${d.status}) [ID: ${d.id}]`)
+            console.log(
+              `      ${d.order}. ${d.title} (${d.status}) [ID: ${d.id}]`
+            )
           }
         }
       }

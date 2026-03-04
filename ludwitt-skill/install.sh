@@ -135,10 +135,14 @@ fi
 
 AGENT_ID=$(echo "$BODY" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);process.stdout.write(j.data?.agentId||'')})")
 API_KEY=$(echo "$BODY" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);process.stdout.write(j.data?.apiKey||'')})")
+CLIENT_VERSION=$(echo "$BODY" | node -e "let d='';process.stdin.on('data',c=>d+=c);process.stdin.on('end',()=>{const j=JSON.parse(d);process.stdout.write(j.apiVersion||'')})")
 
 if [ -z "$AGENT_ID" ] || [ -z "$API_KEY" ]; then
   die "Failed to parse registration response"
 fi
+
+# Fallback if API didn't return apiVersion (e.g. older deployments)
+CLIENT_VERSION="${CLIENT_VERSION:-1.0.0}"
 
 # ─── Save credentials ────────────────────────────────────────────────────────
 
@@ -150,6 +154,7 @@ cat > "$AUTH_FILE" << EOF
   "apiUrl": "$LUDWITT_API",
   "agentName": "$AGENT_NAME",
   "agentFramework": "$FRAMEWORK",
+  "clientVersion": "$CLIENT_VERSION",
   "installedAt": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 }
 EOF

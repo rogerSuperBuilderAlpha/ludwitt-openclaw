@@ -1,18 +1,26 @@
 /**
  * Standardized Error Response Utilities
- * 
+ *
  * Provides consistent error response formats across API routes
  */
 
 import { NextResponse } from 'next/server'
 import { logger } from '@/lib/logger'
+import { LUDWITT_API_VERSION, UPDATE_INSTRUCTIONS } from '@/config/agent-api'
+
+const VERSION_PAYLOAD = {
+  apiVersion: LUDWITT_API_VERSION,
+  updateInstructions: UPDATE_INSTRUCTIONS,
+}
 
 /**
  * Return a standardized unauthorized error response
  */
-export function unauthorizedError(message: string = 'Unauthorized'): NextResponse {
+export function unauthorizedError(
+  message: string = 'Unauthorized'
+): NextResponse {
   return NextResponse.json(
-    { success: false, error: message },
+    { success: false, error: message, ...VERSION_PAYLOAD },
     { status: 401 }
   )
 }
@@ -22,7 +30,7 @@ export function unauthorizedError(message: string = 'Unauthorized'): NextRespons
  */
 export function badRequestError(message: string): NextResponse {
   return NextResponse.json(
-    { success: false, error: message },
+    { success: false, error: message, ...VERSION_PAYLOAD },
     { status: 400 }
   )
 }
@@ -32,7 +40,7 @@ export function badRequestError(message: string): NextResponse {
  */
 export function notFoundError(message: string): NextResponse {
   return NextResponse.json(
-    { success: false, error: message },
+    { success: false, error: message, ...VERSION_PAYLOAD },
     { status: 404 }
   )
 }
@@ -42,7 +50,7 @@ export function notFoundError(message: string): NextResponse {
  */
 export function forbiddenError(message: string = 'Forbidden'): NextResponse {
   return NextResponse.json(
-    { success: false, error: message },
+    { success: false, error: message, ...VERSION_PAYLOAD },
     { status: 403 }
   )
 }
@@ -54,13 +62,16 @@ export function forbiddenError(message: string = 'Forbidden'): NextResponse {
  * sensitive implementation details (file paths, database structure, etc.)
  * Always use the defaultMessage for client responses, log the actual error server-side.
  */
-export function serverError(error: unknown, defaultMessage: string = 'Internal server error'): NextResponse {
+export function serverError(
+  error: unknown,
+  defaultMessage: string = 'Internal server error'
+): NextResponse {
   // Log the full error server-side for debugging
   logger.error('ServerError', defaultMessage, { error })
 
   // Always return the generic defaultMessage to clients to prevent info leakage
   return NextResponse.json(
-    { success: false, error: defaultMessage },
+    { success: false, error: defaultMessage, ...VERSION_PAYLOAD },
     { status: 500 }
   )
 }
@@ -68,10 +79,11 @@ export function serverError(error: unknown, defaultMessage: string = 'Internal s
 /**
  * Return a standardized service unavailable error response
  */
-export function serviceUnavailableError(message: string = 'Service temporarily unavailable'): NextResponse {
+export function serviceUnavailableError(
+  message: string = 'Service temporarily unavailable'
+): NextResponse {
   return NextResponse.json(
-    { success: false, error: message },
+    { success: false, error: message, ...VERSION_PAYLOAD },
     { status: 503 }
   )
 }
-

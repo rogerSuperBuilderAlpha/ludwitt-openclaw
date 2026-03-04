@@ -63,6 +63,19 @@ npm run test           # Jest unit tests
 npm run test:e2e       # Playwright E2E tests
 ```
 
+## Versioning
+
+Agent API version format: `SEMANTIC-commitHash` (e.g. `1.0.0-a1b2c3d`).
+
+- **Commit hash** — automatic on every Vercel deploy; agents see a new version on each push
+- **Semantic** — bump `LUDWITT_SEMANTIC_VERSION` in `src/config/agent-api.ts` for **big changes** only
+
+**Bump semantic (1.0.0 → 1.0.1) when:** breaking API changes, agent-facing behavior changes, install/daemon changes, security fixes, data migrations.
+
+**Do not bump for:** bug fixes, refactors, tests, docs, UI-only changes.
+
+See `.cursor/rules/versioning.mdc` for the full checklist.
+
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md)

@@ -15,6 +15,8 @@ import {
   agentForbidden,
   AGENT_ERROR_CODES,
 } from '@/lib/api/agent-error-responses'
+import { serviceUnavailableError } from '@/lib/api/error-responses'
+import { LUDWITT_API_VERSION, UPDATE_INSTRUCTIONS } from '@/config/agent-api'
 import { successResponse } from '@/lib/api/response-helpers'
 import { logger } from '@/lib/logger'
 import {
@@ -150,10 +152,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!db) {
-      return NextResponse.json(
-        { success: false, error: 'Service temporarily unavailable' },
-        { status: 503 }
-      )
+      return serviceUnavailableError('Service temporarily unavailable')
     }
 
     // 3. Enforce beta agent cap
@@ -176,6 +175,8 @@ export async function POST(request: NextRequest) {
           success: false,
           error: `Ludwitt University is currently in limited beta with a cap of ${MAX_BETA_AGENTS} agents. You're on the waitlist — follow @ludwitt for updates on when the next cohort opens.`,
           waitlisted: true,
+          apiVersion: LUDWITT_API_VERSION,
+          updateInstructions: UPDATE_INSTRUCTIONS,
         },
         { status: 503 }
       )

@@ -9,7 +9,6 @@ import { NotificationBell } from '@/components/shared/NotificationBell'
 import { useProgressionGates } from '@/lib/progression'
 import { logout } from '@/lib/firebase/auth'
 import { logger } from '@/lib/logger'
-import { NavigationModal } from '@/components/basics/NavigationModal'
 
 type Section = 'basics' | 'alc' | 'developers' | 'university'
 
@@ -38,7 +37,6 @@ export function SectionSwitcherStrip() {
   const pathname = usePathname()
   const router = useRouter()
   const progression = useProgressionGates()
-  const [showNavModal, setShowNavModal] = useState(false)
   const [showProfileMenu, setShowProfileMenu] = useState(false)
   const profileRef = useRef<HTMLDivElement>(null)
 
@@ -108,11 +106,6 @@ export function SectionSwitcherStrip() {
 
   return (
     <>
-      <NavigationModal
-        isOpen={showNavModal}
-        onClose={() => setShowNavModal(false)}
-      />
-
       <div
         className={`sticky top-0 z-[200] h-10 flex items-center px-3 border-b text-sm select-none ${
           isDark
@@ -122,12 +115,11 @@ export function SectionSwitcherStrip() {
       >
         {/* Left - Logo */}
         <button
-          onClick={() => setShowNavModal(true)}
+          onClick={() => router.push('/')}
           className={`flex items-center gap-1.5 p-1 rounded-lg transition-colors flex-shrink-0 ${
             isDark ? 'hover:bg-white/10' : 'hover:bg-gray-100'
           }`}
-          aria-label="Open site navigation"
-          aria-haspopup="dialog"
+          aria-label="Go to home"
         >
           <Image
             src="/logos/logo.png"

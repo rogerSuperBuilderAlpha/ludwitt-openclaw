@@ -1,7 +1,0 @@
-export { DashboardProvider, useDashboard, useDashboardCore, useDashboardXP, useDashboardUI } from './DashboardContext'
-export { useDashboardState } from './hooks/useDashboardState'
-export { default as DashboardHeader } from './DashboardHeader'
-export { default as ProblemSection } from './ProblemSection'
-export { default as ProgressSection } from './ProgressSection'
-export { default as DashboardModals } from './DashboardModals'
-export * from './types'

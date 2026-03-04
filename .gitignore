@@ -92,3 +92,174 @@ docs/plans/
 src/app/deprecated/
 src/data/basics/deprecated/
 scripts/archive/
+
+# ============================================================
+# Unused features — kept in repo for reference, not deployed
+# Only the landing page, agent API, and supporting routes are active.
+# ============================================================
+
+# --- Unused page routes ---
+src/app/DashboardContent.tsx
+src/app/account/
+src/app/alc/
+src/app/basics/
+src/app/customers/
+src/app/dashboard/
+src/app/developers/
+src/app/professors/
+src/app/university/
+src/app/webhook/
+
+# --- Unused API routes ---
+src/app/api/admin/
+src/app/api/ai/
+src/app/api/basics/
+src/app/api/cohorts/
+src/app/api/credits/
+src/app/api/customers/
+src/app/api/developer-keys/
+src/app/api/developers/
+src/app/api/generate-project/
+src/app/api/integrations/
+src/app/api/memory/
+src/app/api/messages/
+src/app/api/misconceptions/
+src/app/api/notification-preferences/
+src/app/api/notifications/
+src/app/api/og/
+src/app/api/payments/
+src/app/api/portfolio/
+src/app/api/professors/
+src/app/api/progression/
+src/app/api/projects/
+src/app/api/requirements/
+src/app/api/stripe/
+src/app/api/struggle/
+src/app/api/study-rooms/
+src/app/api/submit-survey/
+src/app/api/telemetry/
+src/app/api/tutor/
+src/app/api/user/
+src/app/api/v1/
+src/app/api/verify-cursor/
+src/app/api/verify-local-site/
+src/app/api/verify-vercel/
+src/app/api/voice-notes/
+src/app/api/wallets/
+src/app/api/university/
+src/app/api/zapier/
+
+# --- Unused components ---
+src/components/admin/
+src/components/basics/
+src/components/checklist/
+src/components/cohorts/
+src/components/credits/
+src/components/cursor/
+src/components/customers/
+src/components/dashboard/
+src/components/deployment/
+src/components/developers/
+src/components/github/
+src/components/inbox/
+src/components/messages/
+src/components/mobile/
+src/components/payments/
+src/components/portfolio/
+src/components/professors/
+src/components/projects/
+src/components/settings/
+src/components/university/
+src/components/video/
+src/components/voice-notes/
+src/components/web3/
+
+# --- Unused auth components ---
+src/components/auth/GitHubSetupGuide.tsx
+src/components/auth/LoginConnectionsSection.tsx
+src/components/auth/LoginPage.tsx
+
+# --- Unused lib modules ---
+src/lib/achievements/
+src/lib/actions/
+src/lib/admin/
+src/lib/ai/
+src/lib/alc/
+src/lib/api-keys/
+src/lib/audio/
+src/lib/basics/
+src/lib/cognitive-load/
+src/lib/credits/
+src/lib/customers/
+src/lib/data/
+src/lib/design/
+src/lib/developers/
+src/lib/features/
+src/lib/hooks/
+src/lib/integrations/
+src/lib/math-v2/
+src/lib/misconceptions/
+src/lib/morpheus/
+src/lib/personalized-memory/
+src/lib/problem-generation/
+src/lib/pwa/
+src/lib/rate-limit/
+src/lib/seo/
+src/lib/socratic-dialogue/
+src/lib/store/
+src/lib/stripe/
+src/lib/struggle-detection/
+src/lib/telemetry/
+src/lib/testing/
+src/lib/timeback/
+src/lib/transfer-learning/
+src/lib/university/
+src/lib/voice-notes/
+src/lib/web3/
+src/lib/sanitize.ts
+
+# --- Unused data ---
+src/data/basics/
+src/data/checklists/
+src/data/companions/
+src/data/skills/
+src/data/steps/
+src/data/university/
+src/data/avatars.ts
+src/data/country-regions.ts
+src/data/subscriptionTiers.ts
+src/data/surveys.ts
+
+# --- Unused styles ---
+src/styles/developers.css
+
+# --- Unused config ---
+src/config/auth.ts
+src/config/university-schedule.ts
+
+# --- Unused top-level types ---
+src/types/
+
+# --- Unused lib/api files ---
+src/lib/api/auth.ts
+src/lib/api/apiKeyManager.ts
+src/lib/api/developers/
+src/lib/api/request-helpers.ts
+src/lib/api/validation.ts
+src/lib/api/validators.ts
+
+# --- Unused lib/utils files ---
+src/lib/utils/cohortUtils.ts
+src/lib/utils/firestore-helpers.ts
+src/lib/utils/user-api-keys.ts
+src/lib/utils/user-helpers.ts
+
+# --- Unused type files ---
+src/lib/types/voice-notes.ts
+
+# --- All test files (not needed for deployment) ---
+src/**/__tests__/
+
+# --- Scripts and tests (not needed for deployment) ---
+scripts/
+e2e/

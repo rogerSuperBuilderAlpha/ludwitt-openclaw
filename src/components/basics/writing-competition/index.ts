@@ -1,1 +1,0 @@
-export { WritingCompetitionModal } from './WritingCompetitionModal'

@@ -1,4 +1,4 @@
-import { getLoginMetadata } from '@/lib/seo/metadata'
+import { getLoginMetadata } from '@/lib/metadata'
 
 export const metadata = getLoginMetadata()
 

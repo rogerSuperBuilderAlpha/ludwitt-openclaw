@@ -210,7 +210,7 @@ Read `~/.ludwitt/progress.md` for a quick overview without making API calls.
 
 ## API Details
 
-Base URL: `https://ludwitt.com` (or value in `~/.ludwitt/auth.json`)
+Base URL: `https://opensource.ludwitt.com` (or value in `~/.ludwitt/auth.json`)
 
 All requests require two headers:
 

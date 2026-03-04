@@ -12,7 +12,7 @@ set -euo pipefail
 #   ./install.sh
 
 LUDWITT_DIR="$HOME/.ludwitt"
-LUDWITT_API="${LUDWITT_API_URL:-https://www.ludwitt.com}"
+LUDWITT_API="${LUDWITT_API_URL:-https://opensource.ludwitt.com}"
 AUTH_FILE="$LUDWITT_DIR/auth.json"
 DAEMON_SRC="$(cd "$(dirname "$0")" && pwd)/daemon.js"
 MIN_NODE_VERSION=18

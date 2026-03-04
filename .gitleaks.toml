@@ -1,0 +1,15 @@
+title = "Ludwitt gitleaks config"
+
+[allowlist]
+  description = "Allowlist for false positives in example code and test fixtures"
+
+  # Suppress findings where the matched secret contains these strings
+  stopwords = [
+    # Placeholder in the API keys UI page — not a real key
+    "YOUR_API_KEY",
+  ]
+
+  # Suppress findings in these paths — test files intentionally contain fake credentials
+  paths = [
+    '''src/app/api/user/__tests__''',
+  ]

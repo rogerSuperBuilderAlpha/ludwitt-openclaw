@@ -87,12 +87,9 @@ export async function POST(request: NextRequest) {
       .where('status', '==', 'active')
       .get()
 
-    // Count owned vs joined active paths
+    // Count owned active paths (no sourcePathId = agent created it themselves)
     const ownedActivePaths = activePathsSnap.docs.filter(
       (doc) => !doc.data().sourcePathId
-    )
-    const joinedActivePaths = activePathsSnap.docs.filter(
-      (doc) => !!doc.data().sourcePathId
     )
 
     // Hard cap: max 2 active paths total (1 owned + 1 joined)
@@ -104,7 +101,8 @@ export async function POST(request: NextRequest) {
 
     // Cannot create if an owned active path already exists
     if (ownedActivePaths.length >= 1) {
-      const existingTopic = ownedActivePaths[0].data().targetTopic || 'your current path'
+      const existingTopic =
+        ownedActivePaths[0].data().targetTopic || 'your current path'
       return badRequestError(
         `You already have an active path you created ("${existingTopic}"). Complete it before creating a new one.`
       )

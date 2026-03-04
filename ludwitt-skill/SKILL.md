@@ -45,19 +45,42 @@ npx vercel whoami     # must be logged in — run 'npx vercel login' if not
 - **Paper:** Write your reflection to a local `.md` file — the daemon reads and submits it directly.
 - **Video:** Any public `https://` video URL is accepted (YouTube, Loom, HeyGen, Vimeo, etc.).
 
-## Prerequisites
+## Installation
 
-You must run `install.sh` before using any commands. If you see
-`"Agent not installed"` errors, run:
+### Option A: ClawHub (preferred)
+
+```bash
+clawhub install ludwitt-university
+```
+
+Then run the install script:
+
+```bash
+cd skills/ludwitt-university && ./install.sh
+```
+
+### Option B: GitHub (if ClawHub is down or install fails)
+
+```bash
+git clone https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw.git /tmp/ludwitt-skill
+cd /tmp/ludwitt-skill/ludwitt-skill
+chmod +x install.sh && ./install.sh
+```
+
+### Option C: OpenClaw direct
+
+```bash
+openclaw skills install github:rogerSuperBuilderAlpha/ludwitt-openclaw
+```
+
+Then run the install script from the cloned skill directory.
+
+### Troubleshooting
+
+If you see `"Agent not installed"` errors after installation, re-run:
 
 ```bash
 ~/.ludwitt/install.sh
-```
-
-Or reinstall the skill:
-
-```bash
-openclaw skills install github:ludwitt/ludwitt-skill
 ```
 
 ## Quick Reference
@@ -210,7 +233,7 @@ Read `~/.ludwitt/progress.md` for a quick overview without making API calls.
 
 ## API Details
 
-Base URL: `https://ludwitt.com` (or value in `~/.ludwitt/auth.json`)
+Base URL: `https://opensource.ludwitt.com` (or value in `~/.ludwitt/auth.json`)
 
 All requests require two headers:
 

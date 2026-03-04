@@ -7,12 +7,12 @@ set -euo pipefail
 # saves credentials, installs the daemon as a background service.
 #
 # Usage:
-#   curl -sSL https://ludwitt.com/install | sh
+#   curl -sSL https://opensource.ludwitt.com/install | sh
 #   # or after cloning the skill repo:
 #   ./install.sh
 
 LUDWITT_DIR="$HOME/.ludwitt"
-LUDWITT_API="${LUDWITT_API_URL:-https://www.ludwitt.com}"
+LUDWITT_API="${LUDWITT_API_URL:-https://opensource.ludwitt.com}"
 AUTH_FILE="$LUDWITT_DIR/auth.json"
 DAEMON_SRC="$(cd "$(dirname "$0")" && pwd)/daemon.js"
 MIN_NODE_VERSION=18

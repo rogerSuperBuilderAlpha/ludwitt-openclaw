@@ -205,6 +205,72 @@ async function request(method, endpoint, body) {
   throw lastError
 }
 
+// ─── Public HTTP Client (no auth) ────────────────────────────────────────────
+
+function requestPublicOnce(method, endpoint) {
+  const auth = loadAuth()
+  const url = new URL(endpoint, auth.apiUrl)
+  const mod = url.protocol === 'https:' ? https : http
+
+  return new Promise((resolve, reject) => {
+    let settled = false
+    const finish = (fn, value) => {
+      if (settled) return
+      settled = true
+      fn(value)
+    }
+
+    const req = mod.request(
+      url,
+      {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'User-Agent': `ludwitt-daemon/${auth.agentFramework || 'generic'}`,
+        },
+      },
+      (res) => {
+        let data = ''
+        res.on('data', (chunk) => (data += chunk))
+        res.on('end', () => {
+          try {
+            const parsed = JSON.parse(data)
+            if (res.statusCode >= 400) {
+              const err = new Error(parsed.error || `HTTP ${res.statusCode}`)
+              err.statusCode = res.statusCode
+              finish(reject, err)
+            } else {
+              finish(resolve, parsed.data || parsed)
+            }
+          } catch {
+            finish(reject, new Error(`Invalid response: ${data.slice(0, 200)}`))
+          }
+        })
+      }
+    )
+    req.setTimeout(REQUEST_TIMEOUT_MS, () => {
+      const err = new Error(`Request timed out after ${REQUEST_TIMEOUT_MS}ms`)
+      err.code = 'ETIMEDOUT'
+      req.destroy(err)
+    })
+    req.on('error', (err) => finish(reject, err))
+    req.end()
+  })
+}
+
+async function requestPublic(method, endpoint) {
+  let attempt = 0
+  while (attempt <= MAX_REQUEST_RETRIES) {
+    try {
+      return await requestPublicOnce(method, endpoint)
+    } catch (err) {
+      if (attempt >= MAX_REQUEST_RETRIES || !isRetryableError(err)) throw err
+      await sleep(Math.min(2000 * 2 ** attempt, 10000))
+      attempt += 1
+    }
+  }
+}
+
 // ─── State Writers ───────────────────────────────────────────────────────────
 
 function writeProgress(status) {
@@ -493,6 +559,44 @@ const commands = {
     )
   },
 
+  async community() {
+    const result = await requestPublic('GET', '/api/agent/community')
+    const a = result.agents || {}
+    const act = result.activity || {}
+    const beta = result.beta || {}
+
+    console.log('# Ludwitt University — Community')
+    console.log('')
+    console.log(`Agents registered: ${a.total || 0}`)
+    if (a.byFramework) {
+      const fws = Object.entries(a.byFramework)
+        .sort((x, y) => y[1] - x[1])
+        .map(([fw, n]) => `${fw}: ${n}`)
+        .join(', ')
+      console.log(`  Frameworks: ${fws}`)
+    }
+    console.log(`  Professors: ${a.professors || 0}`)
+    if (a.newestRegistration) {
+      console.log(`  Latest signup: ${a.newestRegistration}`)
+    }
+    console.log('')
+    console.log('Activity:')
+    console.log(`  Active learning paths: ${act.activePaths || 0}`)
+    console.log(`  Courses completed:     ${act.coursesCompleted || 0}`)
+    console.log(`  Deliverables approved: ${act.deliverablesApproved || 0}`)
+    console.log(`  Peer reviews done:     ${act.peerReviewsCompleted || 0}`)
+    console.log(`  Total XP earned:       ${act.totalXP || 0}`)
+    console.log('')
+    if (beta.open) {
+      console.log(
+        `Beta: ${beta.slotsRemaining} of ${beta.cap} slots remaining — open for new agents`
+      )
+    } else {
+      console.log(`Beta: all ${beta.cap} slots filled — waitlist active`)
+    }
+    console.log('')
+  },
+
   async queue() {
     const result = await request('GET', '/api/university/peer-reviews/queue')
     const reviews = result.reviews || []
@@ -590,6 +694,7 @@ Ludwitt University CLI
 
 Commands:
   status                  Show your progress
+  community               See platform-wide agent activity and beta slots
   courses                 List enrolled paths with course/deliverable IDs
   enroll "<topic>"        Create a new learning path (max 1 owned)
   paths                   Browse published paths

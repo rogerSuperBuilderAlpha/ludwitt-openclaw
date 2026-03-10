@@ -9,7 +9,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "ESLINT_USE_FLAT_CONFIG=false eslint src/",
     "type-check": "tsc --noEmit",
     "check": "npm run lint && npm run type-check",
     "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css,md}\"",
@@ -113,8 +113,8 @@
     "@typescript-eslint/parser": "^8.56.1",
     "autoprefixer": "^10.4.27",
     "dotenv": "^17.3.1",
-    "eslint": "^10.0.3",
-    "eslint-config-next": "^16.1.6",
+    "eslint": "^9.39.0",
+    "eslint-config-next": "^15.5.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jest-dom": "^5.5.0",
@@ -138,7 +138,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx}": [
-      "next lint --fix --file",
+      "ESLINT_USE_FLAT_CONFIG=false eslint --fix",
       "prettier --write"
     ],
     "*.{js,jsx,json,css,md}": [

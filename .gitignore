@@ -232,7 +232,7 @@ src/lib/misconceptions/
 src/lib/personalized-memory/
 src/lib/problem-generation/
 src/lib/pwa/
-src/lib/rate-limit/
+# src/lib/rate-limit/ — kept (needed by community API route)
 src/lib/seo/
 src/lib/socratic-dialogue/
 src/lib/store/
@@ -280,7 +280,7 @@ src/lib/api/validators.ts
 # --- Unused lib/utils files ---
 src/lib/utils/cohortUtils.ts
 src/lib/utils/user-api-keys.ts
-src/lib/utils/user-helpers.ts
+# src/lib/utils/user-helpers.ts — kept (needed by subscription-helpers)
 
 # --- Unused type files ---
 src/lib/types/voice-notes.ts

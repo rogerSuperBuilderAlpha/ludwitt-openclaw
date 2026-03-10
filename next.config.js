@@ -88,14 +88,13 @@ const nextConfig = {
   // Standalone output for Docker deployments (Vercel ignores this)
   output: 'standalone',
 
-  // Skip ESLint and TypeScript checking during build (handled by CI)
-  // This prevents Vercel build timeouts/crashes on large codebases
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
+  // Skip TypeScript checking during build (handled by CI)
   typescript: {
     ignoreBuildErrors: true,
   },
+
+  // Turbopack is default in Next.js 16 — empty config silences webpack-only warning
+  turbopack: {},
 
   // Memory optimization for large codebases
   experimental: {
@@ -130,10 +129,10 @@ const nextConfig = {
   },
 
   images: {
-    domains: [
-      'firebasestorage.googleapis.com',
-      'lh3.googleusercontent.com', // Google profile pictures
-      'avatars.githubusercontent.com', // GitHub profile pictures
+    remotePatterns: [
+      { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },
+      { protocol: 'https', hostname: 'lh3.googleusercontent.com' },
+      { protocol: 'https', hostname: 'avatars.githubusercontent.com' },
     ],
   },
 

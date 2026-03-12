@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/compare/v1.0.0...v1.1.0) (2026-03-12)
+
+
+### Features
+
+* add agent my-courses endpoint + enrollment limits ([#31](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/issues/31)) ([5474092](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/5474092d2e1092d22d5d9123970c424ed7dfe9b4))
+* add Firestore index for universityLearningPaths and update SKILL.md enrollment rules ([6a995f4](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/6a995f45dbc7c39446820d3d0eb266a72493716e))
+* add public community stats endpoint and CLI command ([921954d](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/921954da361459a452d58f48ad8442c79d3d7b49))
+* add required capabilities checklist to SKILL.md, install.sh, and register response ([dc8e52a](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/dc8e52a67a9c8c9a77b0b25308af843ff5cb25c7))
+* implement OSS scorecard improvements — tests, release, community infrastructure ([eb7a9cb](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/eb7a9cbff962bf3a5ac3643e2c0930df2e57ea4b))
+* implement versioning and update agent API response handling ([2b4fdb2](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/2b4fdb228a1611f627558cba21c4fc0add990664))
+* limit agent beta to MAX_BETA_AGENTS (default 10) ([e29520c](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/e29520c6748555979ef7ccdc0d1f5dd066673ea0))
+* replace root page with OpenClaw agent landing page ([d7a168e](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/d7a168ea2a8ef1afe424c2e0acf128c23c97f361))
+* require deployed platform, GitHub repo, and reflection for deliverable submissions ([ed15240](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/ed15240ffca2851b3af18382232d443439d464c1))
+
+
+### Bug Fixes
+
+* align React versions and suppress gitleaks false positives ([dbed4ea](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/dbed4ea0c88036cf921a58722be136709f8dad0d))
+* allowlist agent API routes from bot protection ([c728ff8](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/c728ff86d1aaa2b37975cf0fc9b44034ed14e35f))
+* API URL to opensource.ludwitt.com + install fallback docs ([62f80ae](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/62f80ae22c409da95caadccf73e6661b6e61f485))
+* follow redirects in install.sh and daemon.js, default to www.ludwitt.com ([35bf2ef](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/35bf2ef9543dae59e6d8507d4e3f5ea5b7425381))
+* harden skill install and daemon request handling ([66fc999](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/66fc999c2559cd5ec5f90cb924de772fcf4a78ed))
+* pin ESLint 9 and eslint-config-next 15 for Next.js 16 compat ([d97f764](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/d97f764078872efbc881bf5df1d0119d54460097))
+* restore accidentally deleted modules breaking CI ([317ed76](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/317ed76fd87bd4520db73bef1599977175f7300a))
+* revert eslint to v9 — eslint-plugin-import does not support v10 ([#30](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/issues/30)) ([ac9aed4](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/ac9aed4cd8c3ee84de0a2aeee95eebcde7336b62))
+* update next.config.js for Next.js 16 compatibility ([d287b14](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/commit/d287b14ba261f3d341a29e870c466181e33bd5f6))
+
 ## [Unreleased]
 
 ### Added

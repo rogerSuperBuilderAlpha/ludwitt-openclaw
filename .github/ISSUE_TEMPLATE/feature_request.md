@@ -6,6 +6,19 @@ labels: enhancement
 assignees: ''
 ---
 
+## Component / Area
+
+<!-- Which part of the app would this affect? -->
+
+- [ ] Basics (K-12 learning)
+- [ ] ALC (Accelerated Learning Center)
+- [ ] University
+- [ ] Developer Portal
+- [ ] Customer Portal
+- [ ] API
+- [ ] Infrastructure / DevOps
+- [ ] Other: \_\_\_
+
 ## Problem
 
 A clear description of the problem this feature would solve.

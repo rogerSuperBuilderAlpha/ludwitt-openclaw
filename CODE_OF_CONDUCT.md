@@ -68,6 +68,10 @@ Community leaders will follow these Community Impact Guidelines in determining t
 
 **Consequence**: A permanent ban from any sort of public interaction within the community.
 
+## Appeals
+
+If you believe an enforcement action was taken in error, you may appeal by emailing conduct@ludwitt.com with the subject line "Code of Conduct Appeal". Appeals will be reviewed by a maintainer who was not involved in the original decision. You will receive a response within 14 days.
+
 ## Attribution
 
 This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 2.1, available at [https://www.contributor-covenant.org/version/2/1/code_of_conduct.html][v2.1].

@@ -2,9 +2,11 @@
 
 An open-source adaptive learning platform. Clone it, self-host it, run your own instance.
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org/)
+[![CI](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/actions/workflows/ci.yml/badge.svg)](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/rogerSuperBuilderAlpha/ludwitt-openclaw/graph/badge.svg)](https://codecov.io/gh/rogerSuperBuilderAlpha/ludwitt-openclaw)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![React](https://img.shields.io/badge/React-19-blue)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)](https://www.typescriptlang.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-12-orange)](https://firebase.google.com/)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-green)](LICENSE)
 
@@ -13,6 +15,17 @@ An open-source adaptive learning platform. Clone it, self-host it, run your own 
 Ludwitt is a learning platform that moves students through a structured progression: from K-12 foundations, through hands-on developer training, into professional work and university-level research. It's built with Next.js, Firebase, and Anthropic Claude, and it's released under the AGPL-3.0 so anyone can run, modify, and deploy their own instance.
 
 If you run a modified version as a network service, you share your changes back. That's the deal.
+
+---
+
+## What It Looks Like
+
+<!-- To add screenshots: place PNGs in docs/screenshots/ and uncomment the table below -->
+<!-- | Basics Practice | Progression Gate | University Dashboard | -->
+<!-- |:---:|:---:|:---:| -->
+<!-- | ![Basics](docs/screenshots/basics-practice.png) | ![Gate](docs/screenshots/progression-gate.png) | ![University](docs/screenshots/university-dashboard.png) | -->
+
+> Screenshots coming soon. No live demo yet — Ludwitt requires Firebase and Anthropic credentials to run. Clone it and try it locally with the [Quick Start](#quick-start) below.
 
 ---
 
@@ -66,8 +79,8 @@ See the [Setup Guide](docs/SETUP.md) for full instructions.
 ## Quick Start
 
 ```bash
-git clone https://github.com/ludwitt/pitch-rise.git
-cd pitch-rise
+git clone https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw.git
+cd ludwitt-openclaw
 npm install
 cp .env.example .env.local   # Add your Firebase, Anthropic, and Stripe credentials
 npm run dev
@@ -81,21 +94,21 @@ Open [http://localhost:3000](http://localhost:3000).
 
 | Layer    | Technologies                                                  |
 | -------- | ------------------------------------------------------------- |
-| Frontend | Next.js 15 (App Router), React 19, TypeScript, Tailwind CSS 4 |
+| Frontend | Next.js 16 (App Router), React 19, TypeScript 5.9, Tailwind 4 |
 | Backend  | Next.js API Routes, Firebase Admin SDK                        |
 | Database | Firebase Firestore                                            |
 | Auth     | Firebase Authentication                                       |
 | AI       | Anthropic Claude (token-based credit system)                  |
 | Payments | Stripe (subscriptions + credits)                              |
 | Video    | Daily.co (study rooms)                                        |
-| Testing  | Jest, Playwright                                              |
+| Testing  | Jest 30, Playwright                                           |
 
 ---
 
 ## Project Structure
 
 ```
-pitch-rise/
+ludwitt-openclaw/
 ├── src/
 │   ├── app/              # Next.js App Router (pages + API routes)
 │   │   ├── basics/       # K-12 learning
@@ -154,9 +167,19 @@ Please read the [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.
 
 ## Community
 
-- **Issues** -- Bug reports, feature requests: [GitHub Issues](https://github.com/ludwitt/pitch-rise/issues)
-- **Discussions** -- Questions, ideas, show & tell: [GitHub Discussions](https://github.com/ludwitt/pitch-rise/discussions)
+- **Issues** -- Bug reports, feature requests: [GitHub Issues](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/issues)
+- **Discussions** -- Questions, ideas, show & tell: [GitHub Discussions](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/discussions)
 - **Security** -- To report a vulnerability, see [SECURITY.md](SECURITY.md)
+
+---
+
+## Contributors
+
+Thanks to everyone who contributes to Ludwitt. See [CONTRIBUTING.md](CONTRIBUTING.md) to get started.
+
+<!-- Contributors list is maintained manually. Add yourself here when your first PR is merged. -->
+
+- **[@ludwitt](https://github.com/ludwitt)** — creator and maintainer
 
 ---
 

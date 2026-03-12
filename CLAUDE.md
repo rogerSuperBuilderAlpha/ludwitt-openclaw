@@ -1,6 +1,6 @@
 # CLAUDE.md — Contributor Guide
 
-Ludwitt is an adaptive learning platform built with **Next.js 15**, **React 19**, **TypeScript**, **Firebase**, and **Tailwind CSS 4**.
+Ludwitt is an adaptive learning platform built with **Next.js 16**, **React 19**, **TypeScript 5.9**, **Firebase**, and **Tailwind CSS 4**.
 
 ## Quick Start
 
@@ -16,7 +16,7 @@ See [`docs/SETUP.md`](docs/SETUP.md) for full setup instructions and required en
 
 | Layer      | Tech                                              |
 | ---------- | ------------------------------------------------- |
-| Frontend   | Next.js 15 (App Router), React 19, Tailwind CSS 4 |
+| Frontend   | Next.js 16 (App Router), React 19, Tailwind CSS 4 |
 | Backend    | Next.js API Routes, Firebase Admin SDK            |
 | Database   | Firestore                                         |
 | Auth       | Firebase Authentication                           |

@@ -10,6 +10,26 @@ assignees: ''
 
 A clear description of what the bug is.
 
+## Component / Area
+
+<!-- Which part of the app is affected? -->
+
+- [ ] Basics (K-12 learning)
+- [ ] ALC (Accelerated Learning Center)
+- [ ] University
+- [ ] Developer Portal
+- [ ] Customer Portal
+- [ ] API
+- [ ] Auth / Login
+- [ ] Other: \_\_\_
+
+## Version
+
+<!-- Run `cat package.json | grep version` or check the footer/health endpoint -->
+
+- App version: [e.g. 1.0.0]
+- Node.js version: [e.g. 20.x]
+
 ## Steps to Reproduce
 
 1. Go to '...'
@@ -24,6 +44,14 @@ What you expected to happen.
 
 What actually happened.
 
+## Error Logs
+
+<!-- Paste any relevant console errors, server logs, or stack traces -->
+
+```
+Paste error output here
+```
+
 ## Screenshots
 
 If applicable, add screenshots.
@@ -32,7 +60,7 @@ If applicable, add screenshots.
 
 - OS: [e.g. macOS, Windows, Linux]
 - Browser: [e.g. Chrome, Firefox, Safari]
-- Node.js version: [e.g. 18.x]
+- Self-hosted: [yes/no]
 
 ## Additional Context
 

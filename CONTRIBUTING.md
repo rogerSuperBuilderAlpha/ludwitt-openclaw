@@ -8,6 +8,19 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ---
 
+## First-Time Contributors
+
+New to the project? Look for issues labeled [`good first issue`](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/labels/good%20first%20issue). These are scoped, well-defined tasks that don't require deep knowledge of the codebase.
+
+Good first contributions include:
+
+- Adding tests for untested components or utilities (see [TESTING.md](TESTING.md) for coverage gaps)
+- Fixing typos or improving documentation
+- Adding accessibility improvements
+- Small bug fixes with clear reproduction steps
+
+---
+
 ## Getting Started
 
 ### Prerequisites
@@ -24,14 +37,14 @@ Please read and follow our [Code of Conduct](CODE_OF_CONDUCT.md).
 2. **Clone your fork**
 
    ```bash
-   git clone https://github.com/YOUR_USERNAME/pitch-rise.git
-   cd pitch-rise
+   git clone https://github.com/YOUR_USERNAME/ludwitt-openclaw.git
+   cd ludwitt-openclaw
    ```
 
 3. **Add upstream remote**
 
    ```bash
-   git remote add upstream https://github.com/ludwitt/pitch-rise.git
+   git remote add upstream https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw.git
    ```
 
 4. **Install dependencies**

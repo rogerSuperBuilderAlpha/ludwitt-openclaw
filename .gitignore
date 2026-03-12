@@ -285,9 +285,5 @@ src/lib/utils/user-api-keys.ts
 # --- Unused type files ---
 src/lib/types/voice-notes.ts
 
-# --- All test files (not needed for deployment) ---
-src/**/__tests__/
-
-# --- Scripts and tests (not needed for deployment) ---
+# --- Scripts (not needed for deployment) ---
 scripts/
-e2e/

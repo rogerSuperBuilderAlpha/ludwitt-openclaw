@@ -82,6 +82,14 @@ jobs:
           path: coverage/
           retention-days: 14
 
+      - name: Upload to Codecov
+        if: always()
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: coverage/
+          fail_ci_if_error: false
+
       - name: Coverage comment on PR
         if: github.event_name == 'pull_request'
         uses: MishaKav/jest-coverage-comment@2a8fe3083255756f3692599238ca251e858e15b2 # v1.0.30

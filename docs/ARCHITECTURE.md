@@ -32,7 +32,7 @@ Technical overview of the Ludwitt codebase — patterns, conventions, and how th
 ## Project Structure
 
 ```
-pitch-rise/
+ludwitt-openclaw/
 ├── src/
 │   ├── app/                    # Next.js App Router
 │   │   ├── api/               # API routes (100+ endpoints)

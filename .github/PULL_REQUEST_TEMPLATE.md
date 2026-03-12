@@ -2,6 +2,8 @@
 
 Brief description of the changes.
 
+Closes #<!-- issue number -->
+
 ## Type of Change
 
 - [ ] Bug fix
@@ -22,9 +24,15 @@ Brief description of the changes.
 
 Add screenshots here.
 
+## Changelog
+
+<!-- Describe the change in one line for CHANGELOG.md. Use Conventional Commits format. -->
+<!-- Example: feat(basics): add offline problem caching -->
+
 ## Checklist
 
 - [ ] Code follows project style guidelines
 - [ ] Self-reviewed the code
 - [ ] Updated documentation if needed
 - [ ] No new warnings introduced
+- [ ] No secrets or credentials committed

@@ -17,8 +17,8 @@ Everything you need to get Ludwitt running locally and deploy to production.
 ## Quick Start
 
 ```bash
-git clone https://github.com/ludwitt/pitch-rise.git
-cd pitch-rise
+git clone https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw.git
+cd ludwitt-openclaw
 npm install
 cp .env.example .env.local
 # Edit .env.local with your credentials (see below)

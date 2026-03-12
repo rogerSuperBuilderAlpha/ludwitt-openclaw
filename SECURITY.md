@@ -6,6 +6,11 @@ If you discover a security vulnerability in Ludwitt, please report it responsibl
 
 **Email:** security@ludwitt.com
 
+For sensitive reports, you may encrypt your email using our PGP key:
+
+- **Key ID:** (coming soon — will be published at `https://ludwitt.com/.well-known/security.txt`)
+- Alternatively, use GitHub's [private vulnerability reporting](https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/security/advisories/new)
+
 Please include:
 
 - Description of the vulnerability

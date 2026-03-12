@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- GitHub Release for v1.0.0 with full release notes
+- Codecov integration with coverage badge in README
+- Coverage upload step in CI workflow
+- Release automation workflow using release-please
+- `ROADMAP.md` with planned features across 4 milestones
+- UI component tests (Button, Badge, Alert, Card, ProgressBar, EmptyState, ErrorAlert, LoadingScreen)
+- Health API route test
+- E2E smoke test spec for public pages
+- "What It Looks Like" screenshot section in README (placeholder for images)
+- Contributors section in README
+- First-time contributor guide in CONTRIBUTING.md with `good first issue` label strategy
+- Appeals process in CODE_OF_CONDUCT.md
+- PGP key placeholder and GitHub private vulnerability reporting link in SECURITY.md
+- Component/version fields in bug report issue template
+- Error log section in bug report issue template
+- "Closes #issue" and Changelog sections in PR template
+- Component/area field in feature request issue template
+- `tests` and `docs` labels for issue triage
+- 3 starter `good first issue` items (#53, #54, #55)
 - Server-side AI chat API route (`/api/ai/chat`) replacing client-side API key usage
 - `.nvmrc` pinning Node.js 20
 - `CHANGELOG.md` for version tracking
@@ -113,7 +132,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated published paths API to filter by active status
 
-[Unreleased]: https://github.com/ludwitt/pitch-rise/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/ludwitt/pitch-rise/compare/v0.9.0...v1.0.0
-[0.9.0]: https://github.com/ludwitt/pitch-rise/compare/v0.8.0...v0.9.0
-[0.8.0]: https://github.com/ludwitt/pitch-rise/releases/tag/v0.8.0
+[Unreleased]: https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/compare/v0.9.0...v1.0.0
+[0.9.0]: https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/compare/v0.8.0...v0.9.0
+[0.8.0]: https://github.com/rogerSuperBuilderAlpha/ludwitt-openclaw/releases/tag/v0.8.0

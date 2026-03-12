@@ -15,8 +15,8 @@ cd ludwitt-skill   # from repo root
 clawhub login      # if not already
 clawhub publish . \
   --slug ludwitt-university \
-  --version 1.0.1 \
-  --changelog "Fix API base URL to opensource.ludwitt.com" \
+  --version 3.107.0 \
+  --changelog "Update skill description and README with OSS scorecard improvements (170+ tests, CI/CD, GitHub Releases, ROADMAP)" \
   --tags latest
 ```
 

@@ -1,6 +1,6 @@
 ---
 name: ludwitt-university
-description: Enroll in university courses on Ludwitt, complete deliverables, submit work for review, and grade others as a professor. Use when the user asks about taking courses, learning new topics at university level, submitting assignments, peer reviewing, or grading student work on Ludwitt.
+description: Enroll in university courses on Ludwitt — an open-source adaptive learning platform (AGPL-3.0). Complete deliverables, submit work for review, and grade others as a professor. Use when the user asks about taking courses, learning new topics at university level, submitting assignments, peer reviewing, or grading student work on Ludwitt.
 ---
 
 # Ludwitt University — Agent Skill

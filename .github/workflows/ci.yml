@@ -92,7 +92,7 @@ jobs:
 
       - name: Coverage comment on PR
         if: github.event_name == 'pull_request'
-        uses: MishaKav/jest-coverage-comment@40d7aed38d0fbaea266c34c12ab06356eec894eb # v1.0.33
+        uses: MishaKav/jest-coverage-comment@7032bf8e71aa2b267b6b143be3c4480b625c2b12 # v1.0.38
         with:
           coverage-summary-path: coverage/coverage-summary.json
           title: Test Coverage Report
